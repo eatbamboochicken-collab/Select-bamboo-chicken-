@@ -1,0 +1,7 @@
+# Cloudflare Pages Redirects
+# Backward compatibility for any cached references to legacy /public/ paths
+/public/icons/*  /icons/:splat  301
+/public/sw.js  /sw.js  301
+/public/manifest.webmanifest  /manifest.webmanifest  301
+/public/manifest.json  /manifest.json  301
+
