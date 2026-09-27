@@ -28,15 +28,23 @@
     <link rel="stylesheet" href="/css/style.css" />
   </head>
   <body>
-    <!-- Bamboo Chicken Select Fixed Header -->
+    <!-- Bamboo Chicken Select Mobile App Bar Header -->
     <header class="select-header" id="main-header">
       <div class="header-inner">
-        <a href="#home" class="brand-badge-group" id="brand-home-link" aria-label="Bamboo Chicken Select Home">
-          <span class="brand-title">
-            BAMBOO CHICKEN
-            <span class="brand-select-tag">SELECT</span>
-          </span>
-        </a>
+        <div class="header-brand-block">
+          <a href="#home" class="brand-badge-group" id="brand-home-link" aria-label="Bamboo Chicken Select Home">
+            <span class="brand-title">
+              BAMBOO CHICKEN
+              <span class="brand-select-tag">SELECT</span>
+            </span>
+          </a>
+          <div class="header-context-badge">
+            <span class="context-city">Harare</span>
+            <span class="context-sep">•</span>
+            <span class="status-dot"></span>
+            <span class="context-open">Open</span>
+          </div>
+        </div>
 
         <div class="header-nav">
           <!-- In-App Quick Install Trigger (Visible in browser mode, hidden when app is installed/standalone) -->
@@ -49,10 +57,6 @@
             <span class="header-install-label">Install App</span>
           </button>
 
-          <div class="status-pill" id="order-status-indicator" title="Kitchen Open in Harare">
-            <span class="status-dot"></span>
-            <span class="status-text">Open</span>
-          </div>
           <button type="button" class="cart-button" id="open-cart-btn" aria-label="Open Order Bag">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"></path>
@@ -86,7 +90,7 @@
     <main id="main-content">
       <div class="main-container menu-page-container">
         
-        <!-- Rebuilt Uncluttered Hero Area -->
+        <!-- Compact Ordering-Oriented Introduction -->
         <section class="select-hero" aria-labelledby="hero-main-title">
           <div class="hero-eyebrow-line">
             <span class="hero-brand-tag">BAMBOO CHICKEN SELECT</span>
@@ -94,11 +98,8 @@
             <span class="hero-location-tag">HARARE</span>
           </div>
           <h1 class="hero-main-title" id="hero-main-title">
-            Freshly Prepared Chicken &amp; Handcrafted Dumplings
+            What are you ordering today?
           </h1>
-          <p class="hero-supporting-text">
-            Hot ready-to-eat specialties and chilled 10-dumpling boxes to finish at home.
-          </p>
         </section>
 
         <!-- Category Filter Navigation -->
@@ -258,21 +259,26 @@
       </div>
     </div>
 
-    <!-- Floating Mobile Cart Button (Inspired by reference screenshot) -->
-    <button type="button" class="floating-cart-pill" id="floating-cart-btn" style="display: none;" aria-label="View Order Bag">
-      <div class="floating-cart-icon-group">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="9" cy="21" r="1"></circle>
-          <circle cx="20" cy="21" r="1"></circle>
-          <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
-        </svg>
-        <span class="floating-cart-badge" id="floating-cart-badge">0</span>
+    <!-- Persistent Mobile Bag / Cart Bar (Compact, Ordering-Focused) -->
+    <div class="persistent-bag-bar" id="floating-cart-btn" style="display: none;" role="region" aria-label="Persistent Order Bag Action" onclick="openCart();">
+      <div class="bag-bar-inner">
+        <div class="bag-bar-info">
+          <div class="bag-bar-count-pill">
+            <span id="floating-cart-badge">0</span>
+            <span id="floating-cart-items-label">items</span>
+          </div>
+          <span class="bag-bar-divider">•</span>
+          <span class="bag-bar-total" id="floating-cart-total">$0.00</span>
+        </div>
+        <div class="bag-bar-cta">
+          <span class="bag-bar-cta-label">VIEW BAG</span>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <polyline points="12 5 19 12 12 19"></polyline>
+          </svg>
+        </div>
       </div>
-      <div style="display: flex; flex-direction: column; text-align: left; line-height: 1.1;">
-        <span style="font-size: 0.7rem; color: var(--text-light-muted); font-weight: 600;">Bag</span>
-        <span class="floating-cart-total" id="floating-cart-total">$0.00</span>
-      </div>
-    </button>
+    </div>
 
     <!-- In-App PWA Install Banner (Android-First Prominent Invitation) -->
     <aside class="pwa-install-banner" id="pwa-install-banner" style="display: none;" aria-label="Install Bamboo Chicken Select App">

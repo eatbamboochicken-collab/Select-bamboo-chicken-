@@ -2,9 +2,11 @@
    BAMBOO CHICKEN SELECT — OFFICIAL SERVICE WORKER
    Android-First High Performance PWA Service Worker
    Offline Shell, Fast Cache, Network-First API Bypass
+   Current Release: v1.1.0
    ========================================================================== */
 
-const CACHE_NAME = 'bc-select-v1.0.0';
+const SW_VERSION = 'v1.1.0';
+const CACHE_NAME = `bc-select-shell-${SW_VERSION}`;
 const OFFLINE_URL = '/';
 
 // Core shell assets to precache on install
@@ -24,11 +26,10 @@ const PRECACHE_ASSETS = [
   '/favicon.svg'
 ];
 
-// Install Event — precache the application shell
+// Install Event — precache the application shell safely
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      // Use catch for individual items to avoid failing install if an optional asset fails
       return Promise.all(
         PRECACHE_ASSETS.map((url) => {
           return cache.add(url).catch((err) => {
@@ -36,8 +37,6 @@ self.addEventListener('install', (event) => {
           });
         })
       );
-    }).then(() => {
-      return self.skipWaiting();
     })
   );
 });
@@ -49,6 +48,7 @@ self.addEventListener('activate', (event) => {
       return Promise.all(
         cacheNames.map((name) => {
           if (name !== CACHE_NAME) {
+            console.log('[SW] Purging outdated shell cache:', name);
             return caches.delete(name);
           }
         })
