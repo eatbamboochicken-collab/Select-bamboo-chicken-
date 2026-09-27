@@ -512,19 +512,19 @@ function renderProductCard(item) {
               >&plus;</button>
             </div>
 
-            <!-- 6. Add to Order Button -->
+            <!-- 6. Add to Bag Button -->
             <button 
               type="button" 
               class="btn-card-add" 
               onclick="addCurrentCardToCart('${item.id}')"
-              aria-label="Add ${cardQty} ${item.name} to order"
+              aria-label="Add ${cardQty} ${item.name} to bag"
             >
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"></path>
                 <path d="M3 6h18"></path>
                 <path d="M16 10a4 4 0 0 1-8 0"></path>
               </svg>
-              <span>Add to Order</span>
+              <span>Add to Bag</span>
             </button>
           </div>
         </div>
@@ -668,15 +668,17 @@ function updateCartUI() {
   const headerCountEl = document.getElementById('cart-count');
   if (headerCountEl) headerCountEl.textContent = totalItemsCount;
 
-  // 3. Update Floating Mobile Cart Pill
+  // 3. Update Persistent Mobile Bag Bar
   const floatingBtn = document.getElementById('floating-cart-btn');
   const floatingBadge = document.getElementById('floating-cart-badge');
   const floatingTotal = document.getElementById('floating-cart-total');
+  const floatingItemsLabel = document.getElementById('floating-cart-items-label');
 
   if (floatingBadge) floatingBadge.textContent = totalItemsCount;
+  if (floatingItemsLabel) floatingItemsLabel.textContent = totalItemsCount === 1 ? 'item' : 'items';
   if (floatingTotal) floatingTotal.textContent = `$${subtotal.toFixed(2)}`;
   if (floatingBtn) {
-    floatingBtn.style.display = totalItemsCount > 0 ? 'flex' : 'none';
+    floatingBtn.style.display = totalItemsCount > 0 ? 'block' : 'none';
   }
 
   // 4. Update Drawer Content
@@ -980,6 +982,10 @@ function closeCheckout() {
   checkoutState.isOpen = false;
   const modal = document.getElementById('checkout-modal');
   if (modal) modal.classList.remove('active');
+
+  if (typeof flushPendingPWAUpdate === 'function') {
+    flushPendingPWAUpdate();
+  }
 }
 
 /**
@@ -2466,6 +2472,11 @@ async function executeOrderSubmission() {
     renderCheckoutProgress(5);
     renderCheckoutStep(5);
 
+    // Order completed successfully — check if an update was deferred
+    if (typeof flushPendingPWAUpdate === 'function') {
+      flushPendingPWAUpdate();
+    }
+
   } catch (error) {
     console.error("Order submission failed:", error);
     checkoutState.isSubmitting = false;
@@ -2816,16 +2827,93 @@ function escapeHtml(str) {
 
 let deferredInstallPrompt = null;
 const PWA_DISMISSED_KEY = 'bc_pwa_install_dismissed_until';
+const PWA_INSTALLED_KEY = 'bc_pwa_installed';
+
+// PWA Automatic Update Lifecycle State
+let pwaRegistration = null;
+let updateCheckCooldown = 0;
+let isRefreshingForUpdate = false;
+window._pendingServiceWorkerUpdate = null;
+window._reloadWhenSafe = false;
+
+/**
+ * Checks whether it is currently safe to apply a Service Worker update.
+ * If customer is actively in the checkout modal or submitting, updates are safely deferred.
+ */
+function isSafeToApplyUpdate() {
+  if (window.checkoutState && (checkoutState.isOpen || checkoutState.isSubmitting)) {
+    return false;
+  }
+  return true;
+}
+
+/**
+ * Executes a controlled check for an updated Service Worker
+ */
+function checkForPWAUpdate() {
+  if (!('serviceWorker' in navigator) || !navigator.onLine) return;
+  const now = Date.now();
+  // Debounce checks to protect mobile data (minimum 30 seconds between triggered checks)
+  if (now - updateCheckCooldown < 30000) return;
+  updateCheckCooldown = now;
+
+  navigator.serviceWorker.ready.then((reg) => {
+    pwaRegistration = reg;
+    reg.update().catch((err) => {
+      console.warn('[PWA] ServiceWorker update check failed:', err);
+    });
+  }).catch(() => {});
+}
+
+/**
+ * Handles a newly installed waiting Service Worker
+ */
+function handleWaitingServiceWorker(waitingWorker) {
+  if (!waitingWorker) return;
+
+  if (isSafeToApplyUpdate()) {
+    // Customer is simply browsing or idle — activate the update silently
+    waitingWorker.postMessage({ type: 'SKIP_WAITING' });
+  } else {
+    // Customer is completing an active order — defer until order finishes
+    window._pendingServiceWorkerUpdate = waitingWorker;
+    showToastNotification('New version available. It will update after your order.');
+  }
+}
+
+/**
+ * Called when checkout finishes or modal closes to apply any deferred update
+ */
+function flushPendingPWAUpdate() {
+  if (window._pendingServiceWorkerUpdate && isSafeToApplyUpdate()) {
+    const worker = window._pendingServiceWorkerUpdate;
+    window._pendingServiceWorkerUpdate = null;
+    worker.postMessage({ type: 'SKIP_WAITING' });
+  } else if (window._reloadWhenSafe && isSafeToApplyUpdate()) {
+    window._reloadWhenSafe = false;
+    window.location.reload();
+  }
+}
 
 /**
  * Detects whether the app is executing in standalone (installed) mode
+ * Uses window.matchMedia('(display-mode: standalone)').matches and standard PWA signals
  */
 function isAppStandalone() {
-  const isDisplayStandalone = window.matchMedia('(display-mode: standalone)').matches;
+  const isDisplayStandalone = Boolean(window.matchMedia && window.matchMedia('(display-mode: standalone)').matches);
   const isIOSStandalone = window.navigator.standalone === true;
-  const isAndroidTWA = document.referrer && document.referrer.includes('android-app://');
-  const isFullscreen = window.matchMedia('(display-mode: fullscreen)').matches;
-  return isDisplayStandalone || isIOSStandalone || isAndroidTWA || isFullscreen;
+  const isAndroidTWA = Boolean(document.referrer && document.referrer.includes('android-app://'));
+  const isFullscreen = Boolean(window.matchMedia && window.matchMedia('(display-mode: fullscreen)').matches);
+  const isMinimalUI = Boolean(window.matchMedia && window.matchMedia('(display-mode: minimal-ui)').matches);
+  return isDisplayStandalone || isIOSStandalone || isAndroidTWA || isFullscreen || isMinimalUI;
+}
+
+/**
+ * Detects whether the user is on an Android device
+ */
+function isAndroid() {
+  const ua = window.navigator.userAgent.toLowerCase();
+  return /android/.test(ua);
 }
 
 /**
@@ -2833,99 +2921,241 @@ function isAppStandalone() {
  */
 function isIOS() {
   const ua = window.navigator.userAgent.toLowerCase();
-  return /iphone|ipad|ipod/.test(ua) && !window.MSStream;
+  return /iphone|ipad|ipod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+}
+
+/**
+ * Detects whether the app has already been installed by the customer
+ */
+function isAppAlreadyInstalled() {
+  if (isAppStandalone()) return true;
+  try {
+    return localStorage.getItem(PWA_INSTALLED_KEY) === 'true';
+  } catch (e) {
+    return false;
+  }
+}
+
+/**
+ * Completely hides all install UI elements (banner, pill, footer, modal)
+ */
+function hideAllInstallUI() {
+  const headerBtn = document.getElementById('header-install-btn');
+  if (headerBtn) headerBtn.style.display = 'none';
+
+  const footerRow = document.getElementById('footer-install-row');
+  if (footerRow) footerRow.style.display = 'none';
+
+  const banner = document.getElementById('pwa-install-banner');
+  if (banner) banner.style.display = 'none';
+
+  const iosModal = document.getElementById('ios-install-modal');
+  if (iosModal) iosModal.style.display = 'none';
+}
+
+/**
+ * Sets up a subtle "Open App" experience if the user on Android Chrome
+ * has already installed the app but is browsing the website in a browser tab
+ */
+function setupOpenInAppExperience() {
+  // Ensure NO install banner or repeated install prompts appear
+  const banner = document.getElementById('pwa-install-banner');
+  if (banner) banner.style.display = 'none';
+
+  const footerRow = document.getElementById('footer-install-row');
+  if (footerRow) footerRow.style.display = 'none';
+
+  // Provide a subtle "Open App" pill in the header
+  const headerBtn = document.getElementById('header-install-btn');
+  if (headerBtn) {
+    headerBtn.style.display = 'inline-flex';
+    const label = headerBtn.querySelector('.header-install-label');
+    if (label) label.textContent = 'Open App';
+    headerBtn.setAttribute('aria-label', 'Open Bamboo Chicken Select App');
+    headerBtn.onclick = () => {
+      window.location.href = '/?source=pwa';
+    };
+  }
 }
 
 /**
  * Initializes PWA Service Worker, installation hooks, and offline detection
  */
 function initPWA() {
-  // 1. Mark standalone state on document root
+  // 1. Mark standalone state on document root and hide install UI if standalone
   const standalone = isAppStandalone();
   if (standalone) {
     document.documentElement.classList.add('pwa-standalone');
     document.body.classList.add('pwa-standalone');
+    hideAllInstallUI();
     console.log('[PWA] Bamboo Chicken Select running in installed standalone mode');
+  } else {
+    // Default: ensure all install UI starts hidden
+    hideAllInstallUI();
   }
 
-  // 2. Register Service Worker
+  // Listen dynamically for display-mode changes
+  if (window.matchMedia) {
+    try {
+      const standaloneMq = window.matchMedia('(display-mode: standalone)');
+      const handleModeChange = (e) => {
+        if (e.matches) {
+          document.documentElement.classList.add('pwa-standalone');
+          document.body.classList.add('pwa-standalone');
+          hideAllInstallUI();
+        }
+      };
+      if (standaloneMq.addEventListener) {
+        standaloneMq.addEventListener('change', handleModeChange);
+      } else if (standaloneMq.addListener) {
+        standaloneMq.addListener(handleModeChange);
+      }
+    } catch (e) {}
+  }
+
+  // 2. Android: Check getInstalledRelatedApps for Chrome installed state
+  if (isAndroid() && 'getInstalledRelatedApps' in navigator) {
+    navigator.getInstalledRelatedApps().then((relatedApps) => {
+      if (relatedApps && relatedApps.length > 0) {
+        try {
+          localStorage.setItem(PWA_INSTALLED_KEY, 'true');
+        } catch (e) {}
+        if (isAppStandalone()) {
+          hideAllInstallUI();
+        } else {
+          setupOpenInAppExperience();
+        }
+      }
+    }).catch(() => {});
+  }
+
+  // 3. Register Service Worker & Configure Automatic Update Lifecycle
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
       navigator.serviceWorker.register('/sw.js', { scope: '/' })
         .then((registration) => {
+          pwaRegistration = registration;
           console.log('[PWA] ServiceWorker registered with scope:', registration.scope);
-          // Check for service worker updates
-          registration.onupdatefound = () => {
+
+          // If there is already a waiting worker, handle it safely
+          if (registration.waiting) {
+            handleWaitingServiceWorker(registration.waiting);
+          }
+
+          // Listen for new updates found
+          registration.addEventListener('updatefound', () => {
             const installingWorker = registration.installing;
-            if (installingWorker) {
-              installingWorker.onstatechange = () => {
-                if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                  showToastNotification('Bamboo Chicken Select updated. Refresh for latest items.');
-                }
-              };
-            }
-          };
+            if (!installingWorker) return;
+            installingWorker.addEventListener('statechange', () => {
+              if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                handleWaitingServiceWorker(installingWorker);
+              }
+            });
+          });
+
+          // Check for new version on app start
+          setTimeout(() => { checkForPWAUpdate(); }, 2000);
         })
         .catch((err) => {
           console.warn('[PWA] ServiceWorker registration failed:', err);
         });
     });
+
+    // Handle controller change (safe automatic reload)
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (isRefreshingForUpdate) return;
+      if (isSafeToApplyUpdate()) {
+        isRefreshingForUpdate = true;
+        window.location.reload();
+      } else {
+        window._reloadWhenSafe = true;
+      }
+    });
+
+    // Check when PWA returns to foreground
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') {
+        checkForPWAUpdate();
+      }
+    });
+    window.addEventListener('focus', () => {
+      checkForPWAUpdate();
+    });
+
+    // Check periodically while app is open (~5 minutes)
+    setInterval(checkForPWAUpdate, 5 * 60 * 1000);
   }
 
-  // 3. BeforeInstallPrompt (Chromium / Android)
+  // 4. BeforeInstallPrompt (Specifically tailored for Android Chrome)
   window.addEventListener('beforeinstallprompt', (e) => {
-    // Prevent default browser ambient mini-infobar
+    // Only Android devices are eligible for Android PWA install UI
+    if (!isAndroid()) {
+      return;
+    }
+
+    // If app is already running in standalone or marked installed, never prompt
+    if (isAppStandalone() || isAppAlreadyInstalled()) {
+      hideAllInstallUI();
+      if (!isAppStandalone() && isAppAlreadyInstalled()) {
+        setupOpenInAppExperience();
+      }
+      return;
+    }
+
+    // Preserve Android's normal beforeinstallprompt event handling
     e.preventDefault();
     deferredInstallPrompt = e;
-    console.log('[PWA] Captured beforeinstallprompt event');
+    console.log('[PWA] Captured beforeinstallprompt event for Android');
 
-    // Update UI triggers if not already installed
-    if (!isAppStandalone()) {
-      const headerBtn = document.getElementById('header-install-btn');
-      if (headerBtn) headerBtn.style.display = 'inline-flex';
-
-      const footerRow = document.getElementById('footer-install-row');
-      if (footerRow) footerRow.style.display = 'flex';
-
-      // Check dismissal cooldown (48 hours)
-      const dismissedUntil = localStorage.getItem(PWA_DISMISSED_KEY);
-      const isDismissed = dismissedUntil && Date.now() < parseInt(dismissedUntil, 10);
-      if (!isDismissed) {
-        // Invite the user after brief navigation (2 seconds)
-        setTimeout(() => {
-          showPWAInstallBanner();
-        }, 2000);
-      }
+    // Show header install button for uninstalled Android browser
+    const headerBtn = document.getElementById('header-install-btn');
+    if (headerBtn) {
+      headerBtn.style.display = 'inline-flex';
+      const label = headerBtn.querySelector('.header-install-label');
+      if (label) label.textContent = 'Install App';
+      headerBtn.setAttribute('aria-label', 'Install Bamboo Chicken Select App');
+      headerBtn.onclick = () => { triggerPWAInstall(); };
     }
-  });
-
-  // 4. App Installed Event
-  window.addEventListener('appinstalled', () => {
-    console.log('[PWA] Bamboo Chicken Select was successfully installed');
-    deferredInstallPrompt = null;
-    dismissPWAInstallBanner();
-    document.documentElement.classList.add('pwa-standalone');
-    document.body.classList.add('pwa-standalone');
-
-    const headerBtn = document.getElementById('header-install-btn');
-    if (headerBtn) headerBtn.style.display = 'none';
-
-    const footerRow = document.getElementById('footer-install-row');
-    if (footerRow) footerRow.style.display = 'none';
-
-    showToastNotification('Bamboo Chicken Select installed! Find it in your apps.');
-  });
-
-  // 5. iOS device detection — show header & footer buttons if not standalone
-  if (isIOS() && !isAppStandalone()) {
-    const headerBtn = document.getElementById('header-install-btn');
-    if (headerBtn) headerBtn.style.display = 'inline-flex';
 
     const footerRow = document.getElementById('footer-install-row');
     if (footerRow) footerRow.style.display = 'flex';
+
+    // Check dismissal cooldown (48 hours)
+    let isDismissed = false;
+    try {
+      const dismissedUntil = localStorage.getItem(PWA_DISMISSED_KEY);
+      isDismissed = dismissedUntil && Date.now() < parseInt(dismissedUntil, 10);
+    } catch (err) {}
+
+    if (!isDismissed) {
+      setTimeout(() => {
+        // Double check not standalone / not installed before showing banner
+        if (isAndroid() && !isAppStandalone() && !isAppAlreadyInstalled()) {
+          showPWAInstallBanner();
+        }
+      }, 2000);
+    }
+  });
+
+  // 5. App Installed Event
+  window.addEventListener('appinstalled', () => {
+    console.log('[PWA] Bamboo Chicken Select was successfully installed');
+    deferredInstallPrompt = null;
+    try {
+      localStorage.setItem(PWA_INSTALLED_KEY, 'true');
+    } catch (e) {}
+    hideAllInstallUI();
+    document.documentElement.classList.add('pwa-standalone');
+    document.body.classList.add('pwa-standalone');
+    showToastNotification('Bamboo Chicken Select installed! Find it in your apps.');
+  });
+
+  // 6. If on Android, already installed, but browsing in Chrome tab
+  if (isAndroid() && isAppAlreadyInstalled() && !isAppStandalone()) {
+    setupOpenInAppExperience();
   }
 
-  // 6. Online / Offline Connectivity Monitor
+  // 7. Online / Offline Connectivity Monitor
   function updateOnlineStatus() {
     const banner = document.getElementById('offline-banner');
     if (!navigator.onLine) {
@@ -2935,6 +3165,8 @@ function initPWA() {
         banner.style.display = 'none';
         showToastNotification('Connected back online. Live ordering available.');
       }
+      // Check for updates upon online recovery
+      checkForPWAUpdate();
     }
   }
 
@@ -2942,7 +3174,7 @@ function initPWA() {
   window.addEventListener('offline', updateOnlineStatus);
   updateOnlineStatus();
 
-  // 7. Handle URL parameters & PWA Shortcuts
+  // 8. Handle URL parameters & PWA Shortcuts
   handlePWAUrlShortcuts();
 }
 
@@ -2974,10 +3206,10 @@ function handlePWAUrlShortcuts() {
 }
 
 /**
- * Display custom in-app install card
+ * Display custom in-app install card (Android only, uninstalled only)
  */
 function showPWAInstallBanner() {
-  if (isAppStandalone()) return;
+  if (!isAndroid() || isAppStandalone() || isAppAlreadyInstalled()) return;
   const banner = document.getElementById('pwa-install-banner');
   if (banner) {
     banner.style.display = 'block';
@@ -3002,9 +3234,13 @@ function dismissPWAInstallBanner() {
 }
 
 /**
- * Main trigger for installing Bamboo Chicken Select as a PWA
+ * Main trigger for installing Bamboo Chicken Select as an Android PWA
  */
 async function triggerPWAInstall() {
+  // Only execute for Android devices that are not already standalone or installed
+  if (!isAndroid() || isAppStandalone() || isAppAlreadyInstalled()) {
+    return;
+  }
   if (deferredInstallPrompt) {
     try {
       dismissPWAInstallBanner();
@@ -3013,30 +3249,24 @@ async function triggerPWAInstall() {
       console.log('[PWA] User choice:', choiceResult.outcome);
       if (choiceResult.outcome === 'accepted') {
         deferredInstallPrompt = null;
+        try {
+          localStorage.setItem(PWA_INSTALLED_KEY, 'true');
+        } catch (e) {}
+        hideAllInstallUI();
       }
     } catch (err) {
       console.warn('[PWA] Installation prompt failed:', err);
     }
-  } else if (isIOS()) {
-    openIOSInstallModal();
-  } else {
-    // Generic fallback instructions for desktop / other mobile browsers
-    showToastNotification("To install: Open browser options (⋮) and select 'Install app' or 'Add to Home screen'.");
   }
 }
 
 /**
- * Open iOS Safari installation guidance modal
+ * iOS modal stubs (no-op, Android-exclusive installation flow)
  */
 function openIOSInstallModal() {
-  dismissPWAInstallBanner();
-  const modal = document.getElementById('ios-install-modal');
-  if (modal) modal.style.display = 'flex';
+  // Disabled: PWA installation experience is specifically designed for Android.
 }
 
-/**
- * Close iOS Safari installation guidance modal
- */
 function closeIOSInstallModal() {
   const modal = document.getElementById('ios-install-modal');
   if (modal) modal.style.display = 'none';
@@ -3065,10 +3295,18 @@ window.checkoutState = checkoutState;
 window.appState = appState;
 window.initPWA = initPWA;
 window.isAppStandalone = isAppStandalone;
+window.isAndroid = isAndroid;
+window.isIOS = isIOS;
+window.isAppAlreadyInstalled = isAppAlreadyInstalled;
+window.hideAllInstallUI = hideAllInstallUI;
+window.setupOpenInAppExperience = setupOpenInAppExperience;
 window.triggerPWAInstall = triggerPWAInstall;
 window.showPWAInstallBanner = showPWAInstallBanner;
 window.dismissPWAInstallBanner = dismissPWAInstallBanner;
 window.openIOSInstallModal = openIOSInstallModal;
 window.closeIOSInstallModal = closeIOSInstallModal;
+window.checkForPWAUpdate = checkForPWAUpdate;
+window.flushPendingPWAUpdate = flushPendingPWAUpdate;
+window.isSafeToApplyUpdate = isSafeToApplyUpdate;
 
 
