@@ -10,7 +10,7 @@
     <meta property="og:type" content="website" />
     <meta name="twitter:card" content="summary_large_image" />
     <!-- Mobile & PWA Optimization (Android-First Installable Application) -->
-    <meta name="theme-color" content="#121214" />
+    <meta name="theme-color" content="#FAF8F5" />
     <meta name="color-scheme" content="dark light" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -32,18 +32,16 @@
     <header class="select-header" id="main-header">
       <div class="header-inner">
         <div class="header-brand-block">
-          <a href="#home" class="brand-badge-group" id="brand-home-link" aria-label="Bamboo Chicken Select Home">
-            <span class="brand-title">
-              BAMBOO CHICKEN
-              <span class="brand-select-tag">SELECT</span>
-            </span>
+          <a href="#home" class="brand-edition-lockup" id="brand-home-link" aria-label="Bamboo Chicken Select Home">
+            <div class="brand-primary-stack">
+              <span class="brand-word-bamboo">BAMBOO</span>
+              <span class="brand-word-chicken">CHICKEN</span>
+            </div>
+            <div class="brand-edition-marker" aria-hidden="true">
+              <span class="edition-divider"></span>
+              <span class="select-text">SELECT</span>
+            </div>
           </a>
-          <div class="header-context-badge">
-            <span class="context-city">Harare</span>
-            <span class="context-sep">•</span>
-            <span class="status-dot"></span>
-            <span class="context-open">Open</span>
-          </div>
         </div>
 
         <div class="header-nav">
@@ -57,7 +55,7 @@
             <span class="header-install-label">Install App</span>
           </button>
 
-          <button type="button" class="cart-button" id="open-cart-btn" aria-label="Open Order Bag">
+          <button type="button" class="cart-button empty" id="open-cart-btn" aria-label="Open Order Bag">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"></path>
               <path d="M3 6h18"></path>
@@ -86,49 +84,554 @@
       </div>
     </div>
 
-    <!-- Main Content: Focused Exclusively on the Select Menu -->
+    <!-- Main Content: Mobile Food-App Multi-View Shell -->
     <main id="main-content">
-      <div class="main-container menu-page-container">
+      <div class="main-container app-shell-container">
         
-        <!-- Compact Ordering-Oriented Introduction -->
-        <section class="select-hero" aria-labelledby="hero-main-title">
-          <div class="hero-eyebrow-line">
-            <span class="hero-brand-tag">BAMBOO CHICKEN SELECT</span>
-            <span class="hero-dot-sep">•</span>
-            <span class="hero-location-tag">HARARE</span>
+        <!-- Tab 1: HOME View (Content-Led Visual Food Discovery Environment) -->
+        <section id="tab-view-home" class="app-tab-pane active" aria-label="Home Feed">
+          <!-- 1. Bamboo Online: Official Social Channel Rail (Home Exclusively) -->
+          <div class="bamboo-online-section" id="bamboo-online-rail" aria-label="Bamboo Online Channels">
+              <div class="bamboo-online-header">
+                <span class="bamboo-online-title">BAMBOO ONLINE</span>
+                <span class="bamboo-online-sub">Official Channels</span>
+              </div>
+              <div class="social-channels-rail" role="list">
+              <!-- Channel 1: Instagram -->
+              <a href="https://www.instagram.com/eatbamboochicken" target="_blank" rel="noopener noreferrer" class="social-channel-item" role="listitem" aria-label="Bamboo Chicken on Instagram">
+                <div class="social-channel-ring">
+                  <div class="social-preview-viewport">
+                    <img src="https://pub-1d12d1bcd0c54b5282f7b9e9eec3ba59.r2.dev/assets/images/website/bamboo_chicken_3_sticks.webp" alt="Signature Bamboo Chicken" class="social-preview-media preview-media-1" loading="eager" />
+                    <div class="social-preview-platform platform-instagram">
+                      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                        <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                        <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+                      </svg>
+                    </div>
+                    <img src="https://pub-1d12d1bcd0c54b5282f7b9e9eec3ba59.r2.dev/assets/images/menu/bamboo_pie_3.webp" alt="Bamboo Pie" class="social-preview-media preview-media-2" loading="lazy" />
+                  </div>
+                  <div class="social-mini-badge mini-instagram" aria-hidden="true">
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                      <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                      <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                    </svg>
+                  </div>
+                </div>
+                <span class="social-channel-name">Instagram</span>
+              </a>
+
+              <!-- Channel 2: TikTok -->
+              <a href="https://www.tiktok.com/@eatbamboochicken" target="_blank" rel="noopener noreferrer" class="social-channel-item" role="listitem" aria-label="Bamboo Chicken on TikTok">
+                <div class="social-channel-ring">
+                  <div class="social-preview-viewport">
+                    <img src="https://images.unsplash.com/photo-1496116218417-1a781b1c416c?auto=format&fit=crop&w=600&q=80" alt="Cooked Dumplings" class="social-preview-media preview-media-1" loading="eager" />
+                    <div class="social-preview-platform platform-tiktok">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                        <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64c.298-.002.595.042.88.13V9.4a6.33 6.33 0 0 0-.88-.06A6.34 6.34 0 0 0 3.14 15.7a6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.34-6.34V8.71a8.21 8.21 0 0 0 4.77 1.52V6.78a4.85 4.85 0 0 1-1-.09z"/>
+                      </svg>
+                    </div>
+                    <img src="https://pub-1d12d1bcd0c54b5282f7b9e9eec3ba59.r2.dev/assets/images/website/bamboo_chicken_3_sticks.webp" alt="Bamboo Chicken Skewers" class="social-preview-media preview-media-2" loading="lazy" />
+                  </div>
+                  <div class="social-mini-badge mini-tiktok" aria-hidden="true">
+                    <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64c.298-.002.595.042.88.13V9.4a6.33 6.33 0 0 0-.88-.06A6.34 6.34 0 0 0 3.14 15.7a6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.34-6.34V8.71a8.21 8.21 0 0 0 4.77 1.52V6.78a4.85 4.85 0 0 1-1-.09z"/>
+                    </svg>
+                  </div>
+                </div>
+                <span class="social-channel-name">TikTok</span>
+              </a>
+
+              <!-- Channel 3: WhatsApp -->
+              <a href="https://wa.me/263790040778?text=Hi%20Bamboo%20Chicken%2C%20I%20am%20exploring%20Select%20delivery" target="_blank" rel="noopener noreferrer" class="social-channel-item" role="listitem" aria-label="Bamboo Chicken WhatsApp Hotline">
+                <div class="social-channel-ring">
+                  <div class="social-preview-viewport">
+                    <img src="https://images.unsplash.com/photo-1563245372-f21724e3856d?auto=format&fit=crop&w=600&q=80" alt="Finish-at-Home Dumplings" class="social-preview-media preview-media-1" loading="eager" />
+                    <div class="social-preview-platform platform-whatsapp">
+                      <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                        <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.006c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.201.662.591 1.221.774 1.394.86.174.086.275.072.376-.044.101-.116.433-.506.549-.68.116-.174.231-.145.39-.086.159.058 1.011.477 1.184.564.173.087.289.13.332.203.043.072.043.419-.101.824z"></path>
+                      </svg>
+                    </div>
+                    <img src="https://images.unsplash.com/photo-1556679343-c7306c1976bc?auto=format&fit=crop&w=600&q=80" alt="Select Ice Tea" class="social-preview-media preview-media-2" loading="lazy" />
+                  </div>
+                  <div class="social-mini-badge mini-whatsapp" aria-hidden="true">
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.006c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.201.662.591 1.221.774 1.394.86.174.086.275.072.376-.044.101-.116.433-.506.549-.68.116-.174.231-.145.39-.086.159.058 1.011.477 1.184.564.173.087.289.13.332.203.043.072.043.419-.101.824z"></path>
+                    </svg>
+                  </div>
+                </div>
+                <span class="social-channel-name">WhatsApp</span>
+              </a>
+
+              <!-- Channel 4: Facebook -->
+              <a href="https://www.facebook.com/eatbamboochicken" target="_blank" rel="noopener noreferrer" class="social-channel-item" role="listitem" aria-label="Bamboo Chicken on Facebook">
+                <div class="social-channel-ring">
+                  <div class="social-preview-viewport">
+                    <img src="https://pub-1d12d1bcd0c54b5282f7b9e9eec3ba59.r2.dev/assets/images/menu/bamboo_pie_3.webp" alt="Golden Bamboo Pie" class="social-preview-media preview-media-1" loading="eager" />
+                    <div class="social-preview-platform platform-facebook">
+                      <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                        <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                      </svg>
+                    </div>
+                    <img src="https://images.unsplash.com/photo-1562967914-608f82629710?auto=format&fit=crop&w=600&q=80" alt="Crispy Chicken Nuggets" class="social-preview-media preview-media-2" loading="lazy" />
+                  </div>
+                  <div class="social-mini-badge mini-facebook" aria-hidden="true">
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                    </svg>
+                  </div>
+                </div>
+                <span class="social-channel-name">Facebook</span>
+              </a>
+            </div>
           </div>
-          <h1 class="hero-main-title" id="hero-main-title">
-            What are you ordering today?
-          </h1>
+
+          <!-- Dynamic Food Discovery Feed (Managed by renderHomeFeed()) -->
+          <div id="home-discovery-feed" class="home-discovery-feed" aria-live="polite">
+            <!-- Dynamically populated with Discovery Nodes -->
+          </div>
+
+          <!-- Harare Delivery Quick Summary -->
+          <div class="home-delivery-summary" onclick="navigateToTab('account');" role="button" tabindex="0" aria-label="View Harare Delivery Areas">
+            <div class="delivery-summary-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="1" y="3" width="15" height="13"></rect>
+                <polygon points="16 8 20 8 23 11 23 16 16 16 8"></polygon>
+                <circle cx="5.5" cy="18.5" r="2.5"></circle>
+                <circle cx="18.5" cy="18.5" r="2.5"></circle>
+              </svg>
+            </div>
+            <div class="delivery-summary-text">
+              <div class="delivery-summary-heading">Harare Delivery Zones Available</div>
+              <div class="delivery-summary-sub">CBD, Avondale, Mount Pleasant, Borrowdale &amp; 30+ suburbs. From $2 fee.</div>
+            </div>
+            <span class="delivery-summary-arrow">&rarr;</span>
+          </div>
+
+          <!-- Big Action Button to Explore Full Menu -->
+          <div class="home-bottom-cta-wrap">
+            <button type="button" class="btn-explore-full-menu" onclick="navigateToTab('menu');">
+              <span>View Full Menu &amp; Order</span>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+                <polyline points="12 5 19 12 12 19"></polyline>
+              </svg>
+            </button>
+          </div>
         </section>
 
-        <!-- Category Filter Navigation -->
-        <nav class="menu-categories-bar" role="tablist" aria-label="Menu categories">
-          <button type="button" class="cat-filter-btn active" data-category="all" role="tab" aria-selected="true" id="filter-all">
-            All Items
-          </button>
-          <button type="button" class="cat-filter-btn" data-category="signature-meals" role="tab" aria-selected="false" id="filter-signature-meals">
-            Signature Meals
-          </button>
-          <button type="button" class="cat-filter-btn" data-category="chicken-and-more" role="tab" aria-selected="false" id="filter-chicken-and-more">
-            Chicken &amp; More
-          </button>
-          <button type="button" class="cat-filter-btn" data-category="cooked-dumplings" role="tab" aria-selected="false" id="filter-cooked-dumplings">
-            Cooked Dumplings
-          </button>
-          <button type="button" class="cat-filter-btn" data-category="finish-at-home" role="tab" aria-selected="false" id="filter-finish-at-home">
-            Finish-at-Home
-          </button>
-          <button type="button" class="cat-filter-btn" data-category="drinks-extras" role="tab" aria-selected="false" id="filter-drinks-extras">
-            Drinks &amp; Extras
-          </button>
-        </nav>
-        <div id="menu-items-list" class="menu-sections-wrapper" aria-label="Select Products Menu">
-          <!-- Dynamically organized into structured sections by js/app.js -->
-        </div>
+        <!-- Tab 2: MENU View (Preserving Existing Category Filters & Products) -->
+        <section id="tab-view-menu" class="app-tab-pane" aria-labelledby="menu-view-title">
+          <div class="menu-tab-header">
+            <div class="menu-tab-header-top">
+              <span class="menu-tab-eyebrow">BAMBOO MENU</span>
+              <h2 class="menu-tab-title" id="menu-view-title">Restaurant Menu</h2>
+            </div>
+            <!-- Sticky Category Filter Navigation Bar -->
+            <nav class="menu-categories-bar" role="tablist" aria-label="Menu categories">
+              <button type="button" class="cat-filter-btn active" data-category="all" role="tab" aria-selected="true" id="filter-all">
+                All
+              </button>
+              <button type="button" class="cat-filter-btn" data-category="signature-meals" role="tab" aria-selected="false" id="filter-signature-meals">
+                Signatures
+              </button>
+              <button type="button" class="cat-filter-btn" data-category="chicken-and-more" role="tab" aria-selected="false" id="filter-chicken-and-more">
+                Chicken &amp; More
+              </button>
+              <button type="button" class="cat-filter-btn" data-category="cooked-dumplings" role="tab" aria-selected="false" id="filter-cooked-dumplings">
+                Dumplings
+              </button>
+              <button type="button" class="cat-filter-btn" data-category="finish-at-home" role="tab" aria-selected="false" id="filter-finish-at-home">
+                Finish-at-Home
+              </button>
+              <button type="button" class="cat-filter-btn" data-category="drinks-extras" role="tab" aria-selected="false" id="filter-drinks-extras">
+                Extras
+              </button>
+            </nav>
+          </div>
+
+          <div id="menu-items-list" class="menu-sections-wrapper" aria-label="Select Products Menu">
+            <!-- Dynamically organized into structured sections by js/app.js -->
+          </div>
+        </section>
+
+        <!-- Tab 3: PREPARE View (Bamboo Preparation & Serving Destination) -->
+        <section id="tab-view-prepare" class="app-tab-pane" aria-labelledby="prepare-guide-title">
+          <!-- Premium Editorial Header -->
+          <div class="prepare-tab-header">
+            <span class="prepare-tab-eyebrow">BAMBOO PREPARE</span>
+            <h2 class="prepare-tab-title" id="prepare-guide-title">Preparation &amp; Serving</h2>
+          </div>
+
+          <div class="prepare-destination-content">
+            <!-- 1. FIRST — FEATURED VIDEO: "How to Finish Cooking Bamboo Dumplings" (Frying / Finish-at-Home Method) -->
+            <div class="prep-section-block" id="prep-featured-video-block">
+              <div class="prep-section-badge-row">
+                <span class="prep-section-label">FEATURED VIDEO</span>
+              </div>
+              <div class="prep-featured-card" id="prep-featured-video">
+                <div class="prep-video-hero-media" id="prep-video-container">
+                  <!-- Poster Thumbnail Layer (Initial state — NO autoplay) -->
+                  <div class="prep-video-poster-layer" id="prep-video-poster-layer">
+                    <img id="prep-video-poster-img" src="https://images.unsplash.com/photo-1563245372-f21724e3856d?auto=format&fit=crop&w=800&q=85" alt="How to Finish Cooking Bamboo Dumplings — Pan-Frying Technique" loading="lazy" />
+                    <div class="content-media-overlay">
+                      <span class="content-media-badge">Frying Method</span>
+                    </div>
+                    <!-- Clear Explicit PLAY Button -->
+                    <button type="button" class="prep-video-play-btn" id="prep-video-play-btn" onclick="playPrepareVideo();" aria-label="Play How to Finish Cooking Bamboo Dumplings Video">
+                      <span class="play-btn-circle">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+                          <polygon points="6 4 20 12 6 20 6 4"></polygon>
+                        </svg>
+                      </span>
+                      <span class="play-btn-text">PLAY</span>
+                    </button>
+                  </div>
+
+                  <!-- Standard Native Video Player -->
+                  <video id="prep-native-video"
+                         class="prep-native-video"
+                         controls
+                         playsinline
+                         preload="none"
+                         poster="https://images.unsplash.com/photo-1563245372-f21724e3856d?auto=format&fit=crop&w=800&q=85"
+                         style="display: none; width: 100%; height: 100%; object-fit: contain; background: #0F172A;">
+                    <source id="prep-native-video-source" src="" type="video/mp4">
+                    Your browser does not support the video tag.
+                  </video>
+
+                  <!-- Non-playing state (preserved video architecture when no real video asset exists) -->
+                  <div id="prep-video-nonplaying-state" class="prep-video-nonplaying-state" style="display: none;">
+                    <div class="prep-nonplaying-content">
+                      <div class="prep-nonplaying-icon">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"></rect>
+                          <line x1="7" y1="2" x2="7" y2="22"></line>
+                          <line x1="17" y1="2" x2="17" y2="22"></line>
+                          <line x1="2" y1="12" x2="22" y2="12"></line>
+                          <line x1="2" y1="7" x2="7" y2="7"></line>
+                          <line x1="2" y1="17" x2="7" y2="17"></line>
+                          <line x1="17" y1="17" x2="22" y2="17"></line>
+                          <line x1="17" y1="7" x2="22" y2="7"></line>
+                        </svg>
+                      </div>
+                      <h4 class="prep-nonplaying-title">How to Finish Cooking Bamboo Dumplings</h4>
+                      <p class="prep-nonplaying-text">Official Bamboo masterclass footage is being finalized. Follow the complete step-by-step Frying Method in the written guide below.</p>
+                      <button type="button" class="btn-prep-nonplaying-close" onclick="resetPrepareVideo();">
+                        Close &amp; Return to Thumbnail
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                <div class="prep-card-meta">
+                  <h3 class="prep-card-title">How to Finish Cooking Bamboo Dumplings</h3>
+                  <p class="prep-card-subtitle">Frying / finish-at-home method</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- 2. SECOND — SERVING: "Dumplings & Soy Sauce" -->
+            <div class="prep-section-block" id="prep-serving-section">
+              <div class="prep-section-badge-row">
+                <span class="prep-section-label">SERVING</span>
+              </div>
+              <div class="prep-serving-card">
+                <div class="prep-serving-media">
+                  <img src="https://images.unsplash.com/photo-1589301760014-d929f3979dbc?auto=format&fit=crop&w=1200&q=85" alt="Dumplings &amp; Savoury Soy Sauce" loading="lazy" />
+                </div>
+                <div class="prep-card-meta">
+                  <h3 class="prep-card-title">Dumplings &amp; Soy Sauce</h3>
+                  <div class="prep-serving-desc-wrap" id="prep-serving-desc-wrap">
+                    <span class="desc-text">A simple Bamboo pairing: dumplings with savoury soy for dipping and sharing</span><span class="desc-ellipsis">... </span><button type="button" class="btn-desc-toggle" onclick="togglePrepareServingDesc(true);" aria-label="Show more description for Dumplings &amp; Soy Sauce">more</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 3. THIRD — WRITTEN METHODS: Only Frying Method and Steaming Method -->
+            <div class="prep-section-block" id="prep-written-methods-section">
+              <div class="prep-section-badge-row">
+                <span class="prep-section-label">WRITTEN METHODS</span>
+              </div>
+              
+              <div class="prep-written-methods-list">
+                <!-- Method 1: Frying Method (Private Classroom Lesson Panel) -->
+                <div class="prep-classroom-panel" id="prep-method-panfry">
+                  <div class="prep-lesson-header">
+                    <span class="prep-lesson-kicker">TECHNIQUE</span>
+                    <h3 class="prep-lesson-title">FRYING METHOD</h3>
+                    <p class="prep-lesson-summary">Pan-frying technique for a crisp, golden bottom finish</p>
+                  </div>
+                  <div class="prep-lesson-divider"></div>
+                  <ol class="prep-steps-sequence">
+                    <li class="prep-step-item">
+                      <span class="prep-step-num">1</span>
+                      <div class="prep-step-content"><strong>Add oil to a hot pan.</strong></div>
+                    </li>
+                    <li class="prep-step-item">
+                      <span class="prep-step-num">2</span>
+                      <div class="prep-step-content">Place chilled dumplings <strong>flat-side down</strong> into the pan and fry until the bottoms turn crisp and golden brown.</div>
+                    </li>
+                    <li class="prep-step-item">
+                      <span class="prep-step-num">3</span>
+                      <div class="prep-step-content">Add a few reasonable drops of water if needed, keeping the focus on achieving a crisp bottom.</div>
+                    </li>
+                    <li class="prep-step-item">
+                      <span class="prep-step-num">4</span>
+                      <div class="prep-step-content">Continue frying until the dumplings are thoroughly heated through with a crisp, golden finish. Serve hot.</div>
+                    </li>
+                  </ol>
+                </div>
+
+                <!-- Method 2: Steaming Method (Private Classroom Lesson Panel) -->
+                <div class="prep-classroom-panel" id="prep-method-steam">
+                  <div class="prep-lesson-header">
+                    <span class="prep-lesson-kicker">TECHNIQUE</span>
+                    <h3 class="prep-lesson-title">STEAMING METHOD</h3>
+                    <p class="prep-lesson-summary">Gentle cooking technique for tender wrappers and juicy filling</p>
+                  </div>
+                  <div class="prep-lesson-divider"></div>
+                  <ol class="prep-steps-sequence">
+                    <li class="prep-step-item">
+                      <span class="prep-step-num">1</span>
+                      <div class="prep-step-content">Line a steamer basket with baking parchment paper or clean cabbage leaves.</div>
+                    </li>
+                    <li class="prep-step-item">
+                      <span class="prep-step-num">2</span>
+                      <div class="prep-step-content">Arrange dumplings spaced slightly apart so they do not touch as they cook.</div>
+                    </li>
+                    <li class="prep-step-item">
+                      <span class="prep-step-num">3</span>
+                      <div class="prep-step-content">Place steamer over boiling water, cover with lid, and cook until piping hot throughout. Serve immediately.</div>
+                    </li>
+                  </ol>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Tab 4: ORDERS View (Order history & tracking) -->
+        <section id="tab-view-orders" class="app-tab-pane" aria-labelledby="orders-tab-title">
+          <div class="orders-tab-header">
+            <span class="orders-tab-eyebrow">Order History</span>
+            <h2 class="orders-tab-title" id="orders-tab-title">My Orders</h2>
+            <p class="orders-tab-subtitle">Confirmed delivery orders placed from this device.</p>
+          </div>
+
+          <div id="orders-list-container" class="orders-list-wrapper">
+            <!-- Dynamically populated by renderOrdersTab() -->
+          </div>
+        </section>
+
+        <!-- Tab 5: ACCOUNT View (Kitchen info & Harare delivery schedule) -->
+        <section id="tab-view-account" class="app-tab-pane" aria-labelledby="account-tab-title">
+          <div class="account-tab-header">
+            <span class="account-tab-eyebrow">Location &amp; Delivery</span>
+            <h2 class="account-tab-title" id="account-tab-title">Harare Kitchen</h2>
+            <p class="account-tab-subtitle">Bamboo Chicken Select order support &amp; delivery coverage.</p>
+          </div>
+
+          <!-- Kitchen Status Card -->
+          <div class="account-card">
+            <div class="account-card-header">
+              <div class="kitchen-status-pill">
+                <span class="status-dot"></span>
+                <span>Kitchen Open for Delivery</span>
+              </div>
+            </div>
+            <div class="kitchen-info-body">
+              <h3 class="kitchen-name">Bamboo Chicken Select</h3>
+              <p class="kitchen-city">Harare, Zimbabwe</p>
+              <p class="kitchen-hours">Hot chicken specialties &amp; handcrafted chilled dumpling boxes.</p>
+            </div>
+
+            <div class="kitchen-actions-grid">
+              <a href="https://wa.me/263790040778?text=Hi%20Bamboo%20Chicken%2C%20I%20have%20an%20inquiry%20regarding%20Select%20delivery" class="btn-contact-action whatsapp" target="_blank" rel="noopener noreferrer" aria-label="Message Bamboo Chicken on WhatsApp">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.006c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.201.662.591 1.221.774 1.394.86.174.086.275.072.376-.044.101-.116.433-.506.549-.68.116-.174.231-.145.39-.086.159.058 1.011.477 1.184.564.173.087.289.13.332.203.043.072.043.419-.101.824z"></path>
+                </svg>
+                <span>WhatsApp Hotline</span>
+              </a>
+              <a href="tel:0790040778" class="btn-contact-action phone" aria-label="Call Bamboo Chicken hotline">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                </svg>
+                <span>0790040778</span>
+              </a>
+            </div>
+          </div>
+
+          <!-- Harare Delivery Zones Schedule -->
+          <div class="account-card">
+            <h3 class="account-card-title">Harare Delivery Zones</h3>
+            <p class="account-card-sub">Fixed transparent rates based on distance from our central kitchen.</p>
+
+            <div class="delivery-zones-breakdown">
+              <div class="zone-row">
+                <div class="zone-fee-badge">$2.00 Fee</div>
+                <div class="zone-details">
+                  <div class="zone-name">Zone 2 (Inner City)</div>
+                  <div class="zone-suburbs">Harare CBD, Avenues</div>
+                </div>
+              </div>
+
+              <div class="zone-row">
+                <div class="zone-fee-badge">$3.00 Fee</div>
+                <div class="zone-details">
+                  <div class="zone-name">Zone 3 (Central Suburbs)</div>
+                  <div class="zone-suburbs">Avondale, Belgravia, Belvedere, Braeside, Eastlea, Arcadia, Milton Park, Hatfield, Southerton, Newlands, Mount Pleasant, UZ, Strathaven, Greendale, Highlands</div>
+                </div>
+              </div>
+
+              <div class="zone-row">
+                <div class="zone-fee-badge">$4.00 Fee</div>
+                <div class="zone-details">
+                  <div class="zone-name">Zone 4 (Outer Suburbs)</div>
+                  <div class="zone-suburbs">Cranborne, Queensdale, Logan Park, Sunningdale, Mbare, Workington, Graniteside, Waterfalls, Highfield, Prospect, Glenwood, Borrowdale, Borrowdale West, Pomona, Vainona, Mount Pleasant Heights, Chisipite, Glen Lorne, Rolf Valley, Ballantyne Park, Colne Valley, Mandara, Greystone Park, Helensvale, The Grange, Mabvuku, Tafara, Epworth, Msasa, Ruwa, Chitungwiza</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- App Information & Status -->
+          <div class="account-card">
+            <h3 class="account-card-title">Application Info</h3>
+            <div class="app-info-grid">
+              <div class="app-info-item">
+                <span class="info-label">App</span>
+                <span class="info-value">Bamboo Chicken Select</span>
+              </div>
+              <div class="app-info-item">
+                <span class="info-label">Version</span>
+                <span class="info-value">v1.1.0 (Production)</span>
+              </div>
+              <div class="app-info-item">
+                <span class="info-label">API Status</span>
+                <span class="info-value online">Connected (Worker D1)</span>
+              </div>
+              <div class="app-info-item">
+                <span class="info-label">PWA Mode</span>
+                <span class="info-value" id="pwa-mode-label">Web Application</span>
+              </div>
+            </div>
+          </div>
+        </section>
 
       </div>
     </main>
+
+    <!-- Product Details Mobile Bottom Sheet (Phase 2 Tactile Food Discovery) -->
+    <div class="product-sheet-backdrop" id="product-sheet-modal" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="sheet-product-title">
+      <div class="product-sheet-container" id="product-sheet-container">
+        <!-- Sheet Drag Bar -->
+        <div class="sheet-drag-handle-bar">
+          <div class="sheet-drag-pill"></div>
+          <button type="button" class="sheet-close-btn" id="close-product-sheet-btn" aria-label="Close product details" onclick="closeProductSheet();">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Scrollable Content Body -->
+        <div class="sheet-scroll-body" id="sheet-scroll-body">
+          <!-- Dynamically populated by renderSheetContent() in js/app.js -->
+        </div>
+
+        <!-- Sticky Action Footer -->
+        <div class="sheet-footer" id="sheet-footer">
+          <!-- Dynamically populated with stepper & Add to Bag CTA -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Discovery Comments Mobile Bottom Sheet -->
+    <div class="comments-sheet-backdrop" id="comments-sheet-modal" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="comments-sheet-title">
+      <div class="comments-sheet-container" id="comments-sheet-container">
+        <!-- Sheet Drag Bar & Header -->
+        <div class="comments-sheet-header">
+          <div class="sheet-drag-pill"></div>
+          <div class="comments-title-wrap">
+            <h3 class="comments-sheet-title" id="comments-sheet-title">Comments</h3>
+            <span class="comments-sheet-subtitle" id="comments-sheet-subtitle">Bamboo Chicken Select</span>
+          </div>
+          <button type="button" class="sheet-close-btn" id="close-comments-sheet-btn" aria-label="Close comments" onclick="closeCommentsSheet();">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Scrollable Comments List -->
+        <div class="comments-scroll-body" id="comments-list-container">
+          <!-- Dynamically populated by renderNodeComments() in js/app.js -->
+        </div>
+
+        <!-- Comment Input Bar -->
+        <div class="comments-input-bar">
+          <form class="comments-input-form" id="comments-input-form" onsubmit="event.preventDefault(); submitDiscoveryComment();">
+            <input 
+              type="text" 
+              id="comment-input-field" 
+              class="comment-input-field" 
+              placeholder="Write a comment..." 
+              maxlength="200" 
+              autocomplete="off" 
+              required
+            />
+            <button type="submit" class="btn-comment-submit" id="btn-comment-submit">Post</button>
+          </form>
+          <div class="comments-disclaimer">Comments are stored locally on your device for this preview.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Serving Guide Bottom Sheet (Type 3: Serving Discovery) -->
+    <div class="comments-sheet-backdrop" id="serving-sheet-modal" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="serving-sheet-title">
+      <div class="comments-sheet-container" id="serving-sheet-container">
+        <div class="comments-sheet-header">
+          <div class="sheet-drag-pill"></div>
+          <div class="comments-title-wrap">
+            <h3 class="comments-sheet-title" id="serving-sheet-title">Serving Guide</h3>
+            <span class="comments-sheet-subtitle">Bamboo Chicken Culinary Inspiration</span>
+          </div>
+          <button type="button" class="sheet-close-btn" id="close-serving-sheet-btn" aria-label="Close serving guide" onclick="closeServingSheet();">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+        <div class="comments-scroll-body" id="serving-sheet-content">
+          <!-- Dynamically populated by openServingSheet() in js/app.js -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Event Catering Enquiry Bottom Sheet (Type 4: Bamboo Attend Events) -->
+    <div class="comments-sheet-backdrop" id="event-sheet-modal" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="event-sheet-title">
+      <div class="comments-sheet-container" id="event-sheet-container">
+        <div class="comments-sheet-header">
+          <div class="sheet-drag-pill"></div>
+          <div class="comments-title-wrap">
+            <h3 class="comments-sheet-title" id="event-sheet-title">Event Catering Enquiry</h3>
+            <span class="comments-sheet-subtitle">Bamboo Chicken Across Harare</span>
+          </div>
+          <button type="button" class="sheet-close-btn" id="close-event-sheet-btn" aria-label="Close event enquiry" onclick="closeEventSheet();">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+        <div class="comments-scroll-body" id="event-sheet-content">
+          <!-- Dynamically populated by openEventEnquiry() in js/app.js -->
+        </div>
+      </div>
+    </div>
 
     <!-- Slide-over Order Cart Drawer -->
     <div class="cart-drawer-backdrop" id="cart-drawer" role="dialog" aria-modal="true" aria-label="Order Cart">
@@ -259,26 +762,25 @@
       </div>
     </div>
 
-    <!-- Persistent Mobile Bag / Cart Bar (Compact, Ordering-Focused) -->
-    <div class="persistent-bag-bar" id="floating-cart-btn" style="display: none;" role="region" aria-label="Persistent Order Bag Action" onclick="openCart();">
-      <div class="bag-bar-inner">
-        <div class="bag-bar-info">
-          <div class="bag-bar-count-pill">
-            <span id="floating-cart-badge">0</span>
-            <span id="floating-cart-items-label">items</span>
-          </div>
-          <span class="bag-bar-divider">•</span>
-          <span class="bag-bar-total" id="floating-cart-total">$0.00</span>
-        </div>
-        <div class="bag-bar-cta">
-          <span class="bag-bar-cta-label">VIEW BAG</span>
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <line x1="5" y1="12" x2="19" y2="12"></line>
-            <polyline points="12 5 19 12 12 19"></polyline>
-          </svg>
-        </div>
-      </div>
-    </div>
+    <!-- Persistent Mobile Bag Control (Compact Secondary Utility, Single Shared State) -->
+    <button type="button" class="persistent-bag-bar" id="floating-cart-btn" style="display: none;" aria-label="View Order Bag" onclick="openCart();">
+      <span class="bag-bar-icon-wrap" aria-hidden="true">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"></path>
+          <path d="M3 6h18"></path>
+          <path d="M16 10a4 4 0 0 1-8 0"></path>
+        </svg>
+      </span>
+      <span class="bag-bar-title">Bag</span>
+      <span class="bag-bar-dot" aria-hidden="true">·</span>
+      <span class="bag-bar-count" id="floating-cart-badge">0</span>
+      <span class="bag-bar-dot" aria-hidden="true">·</span>
+      <span class="bag-bar-total" id="floating-cart-total">$0.00</span>
+      <svg class="bag-bar-arrow-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <polyline points="9 18 15 12 9 6"></polyline>
+      </svg>
+      <span id="floating-cart-items-label" style="display: none;">items</span>
+    </button>
 
     <!-- In-App PWA Install Banner (Android-First Prominent Invitation) -->
     <aside class="pwa-install-banner" id="pwa-install-banner" style="display: none;" aria-label="Install Bamboo Chicken Select App">
@@ -397,12 +899,65 @@
             <span>Install Bamboo Chicken Select App</span>
           </button>
         </div>
-
-        <button type="button" class="footer-model-btn" id="experience-model-btn" aria-label="Warstreet Experience Model">
-          Powered by the Warstreet Experience Model
-        </button>
       </div>
     </footer>
+
+    <!-- Persistent Mobile Bottom Navigation Bar (5 Core App Tabs) -->
+    <nav class="app-bottom-nav" id="app-bottom-nav" aria-label="Main Application Navigation">
+      <button type="button" class="app-nav-item active" data-tab="home" id="nav-btn-home" onclick="navigateToTab('home');" aria-label="Home">
+        <div class="nav-icon-wrap">
+          <svg class="nav-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+          </svg>
+        </div>
+        <span class="nav-label">Home</span>
+      </button>
+
+      <button type="button" class="app-nav-item" data-tab="menu" id="nav-btn-menu" onclick="navigateToTab('menu');" aria-label="Menu">
+        <div class="nav-icon-wrap">
+          <svg class="nav-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"></path>
+            <path d="M7 2v20"></path>
+            <path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"></path>
+          </svg>
+        </div>
+        <span class="nav-label">Menu</span>
+      </button>
+
+      <button type="button" class="app-nav-item" data-tab="prepare" id="nav-btn-prepare" onclick="navigateToTab('prepare');" aria-label="Prepare">
+        <div class="nav-icon-wrap">
+          <svg class="nav-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"></path>
+          </svg>
+        </div>
+        <span class="nav-label">Prepare</span>
+      </button>
+
+      <button type="button" class="app-nav-item" data-tab="orders" id="nav-btn-orders" onclick="navigateToTab('orders');" aria-label="Orders">
+        <div class="nav-icon-wrap">
+          <svg class="nav-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="16" y1="13" x2="8" y2="13"></line>
+            <line x1="16" y1="17" x2="8" y2="17"></line>
+            <polyline points="10 9 9 9 8 9"></polyline>
+          </svg>
+          <span class="nav-orders-dot" id="nav-orders-dot" style="display: none;"></span>
+        </div>
+        <span class="nav-label">Orders</span>
+      </button>
+
+      <button type="button" class="app-nav-item" data-tab="account" id="nav-btn-account" onclick="navigateToTab('account');" aria-label="Account">
+        <div class="nav-icon-wrap">
+          <svg class="nav-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="8" r="5"></circle>
+            <path d="M20 21a8 8 0 0 0-16 0"></path>
+          </svg>
+        </div>
+        <span class="nav-label">Account</span>
+      </button>
+    </nav>
 
     <!-- Pure Static Vanilla JavaScript (Zero build step, zero frameworks) -->
     <script src="/js/app.js"></script>
