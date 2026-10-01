@@ -108,6 +108,7 @@ const SELECT_CATALOG = [
     aspectClass: 'aspect-wide',
     image: 'https://pub-1d12d1bcd0c54b5282f7b9e9eec3ba59.r2.dev/assets/images/website/bamboo_chicken_3_sticks.webp',
     alt: 'Signature Bamboo Chicken on a skewer',
+    shortDescription: 'Signature chicken skewer with Bamboo house seasoning',
     description: 'Our signature Bamboo Chicken, prepared and served with the flavour customers know from Bamboo Chicken.'
   },
   {
@@ -121,6 +122,7 @@ const SELECT_CATALOG = [
     aspectClass: 'aspect-standard',
     image: 'https://pub-1d12d1bcd0c54b5282f7b9e9eec3ba59.r2.dev/assets/images/menu/bamboo_pie_3.webp',
     alt: 'Golden savoury Bamboo Pie',
+    shortDescription: 'Golden, savoury baked pie with signature filling',
     description: 'A golden, savoury pie with a filling inspired by Bamboo Chicken’s menu.'
   },
 
@@ -137,6 +139,7 @@ const SELECT_CATALOG = [
     aspectClass: 'aspect-standard',
     image: 'https://images.unsplash.com/photo-1562967914-608f82629710?auto=format&fit=crop&w=600&q=80',
     alt: 'Crispy bite-sized chicken nuggets, 100g portion',
+    shortDescription: '100g portion of crispy bite-sized chicken nuggets',
     description: '100g of bite-sized chicken nuggets, prepared for an easy and satisfying meal.'
   },
 
@@ -154,6 +157,7 @@ const SELECT_CATALOG = [
     aspectClass: 'aspect-standard',
     image: 'https://images.unsplash.com/photo-1496116218417-1a781b1c416c?auto=format&fit=crop&w=600&q=80',
     alt: 'Five freshly cooked chicken dumplings, pack of 5',
+    shortDescription: 'Five seasoned chicken dumplings, hot & ready',
     description: 'Five chicken dumplings filled with seasoned chicken and served hot, ready to enjoy.'
   },
   {
@@ -169,6 +173,7 @@ const SELECT_CATALOG = [
     aspectClass: 'aspect-standard',
     image: 'https://images.unsplash.com/photo-1541696432-82c6da8ce7bf?auto=format&fit=crop&w=600&q=80',
     alt: 'Five freshly cooked beef dumplings, pack of 5',
+    shortDescription: 'Five seasoned minced beef dumplings, hot & ready',
     description: 'Five beef dumplings filled with seasoned minced beef and served hot, ready to enjoy.'
   },
 
@@ -186,6 +191,7 @@ const SELECT_CATALOG = [
     aspectClass: 'aspect-box',
     image: 'https://images.unsplash.com/photo-1563245372-f21724e3856d?auto=format&fit=crop&w=600&q=80',
     alt: 'Finish-at-Home Chicken Dumpling Box with 10 chilled dumplings',
+    shortDescription: 'Chilled box of 10 dumplings to cook at home',
     description: 'A box of 10 chilled chicken dumplings to cook at home. Bulk savings begin at 3 boxes.'
   },
   {
@@ -201,6 +207,7 @@ const SELECT_CATALOG = [
     aspectClass: 'aspect-box',
     image: 'https://images.unsplash.com/photo-1563245372-f21724e3856d?auto=format&fit=crop&w=600&q=80',
     alt: 'Finish-at-Home Beef Dumpling Box with 10 chilled dumplings',
+    shortDescription: 'Chilled box of 10 dumplings to cook at home',
     description: 'A box of 10 chilled beef dumplings to cook at home. Bulk savings begin at 3 boxes.'
   },
 
@@ -216,6 +223,7 @@ const SELECT_CATALOG = [
     aspectClass: 'aspect-bottle',
     image: 'https://images.unsplash.com/photo-1556679343-c7306c1976bc?auto=format&fit=crop&w=600&q=80',
     alt: 'Chilled bottle of Select Ice Tea',
+    shortDescription: 'Chilled iced tea with a touch of citrus flavour',
     description: 'Chilled iced tea brewed with a touch of citrus flavour. A refreshing companion to any meal.'
   },
   {
@@ -229,6 +237,7 @@ const SELECT_CATALOG = [
     aspectClass: 'aspect-bottle',
     image: 'https://images.unsplash.com/photo-1589301760014-d929f3979dbc?auto=format&fit=crop&w=600&q=80',
     alt: 'Full bottle of Soy Sauce',
+    shortDescription: 'Full bottle of authentic savoury dipping soy sauce',
     description: 'A full bottle of rich savoury soy sauce, suited for dipping dumplings or seasoning meals at home.'
   }
 ];
@@ -240,7 +249,11 @@ const SELECT_CATALOG = [
 const appState = {
   cart: [],
   cardQuantities: {}, // Tracks stepper count per card [item.id]: number
-  activeCategory: 'all'
+  activeCategory: 'all',
+  activeTab: 'home',
+  homeCategory: 'all',
+  sheetQuantity: 1,
+  activeSheetProduct: null
 };
 
 // Initialize per-card quantities to 1
@@ -249,14 +262,1661 @@ SELECT_CATALOG.forEach(item => {
 });
 
 // ==========================================
+// BAMBOO CONTENT ARCHITECTURE (Foundation)
+// ==========================================
+
+/**
+ * Standard Category Taxonomy for Bamboo Content.
+ * Prepared for future categories: recipes, serving-ideas, chinese-inspired, sauces, food-guides.
+ */
+const BAMBOO_CONTENT_CATEGORIES = [
+  {
+    id: 'prepare',
+    label: 'Prepare',
+    icon: '🥟',
+    tagline: 'Finish-at-home cooking guides and validated kitchen methods',
+    active: true
+  }
+];
+
+/**
+ * Standard Bamboo Content Item Model:
+ * - id: unique string
+ * - category: matches one of BAMBOO_CONTENT_CATEGORIES
+ * - title: editorial headline
+ * - shortDescription: concise context
+ * - image: visual food asset
+ * - relatedProductId: optional catalog connection (e.g. 'chicken-dumpling-box-10')
+ * - content: structured payload (methods, steps, notes, safety)
+ * - action: optional contextual conversion action
+ */
+const BAMBOO_CONTENT_ITEMS = [
+  {
+    id: 'dumpling-preparation-guide',
+    category: 'prepare',
+    title: 'Dumpling Preparation Guide',
+    shortDescription: 'Validated finishing methods for your 10-dumpling Finish-at-Home box.',
+    image: 'https://images.unsplash.com/photo-1563245372-f21724e3856d?auto=format&fit=crop&w=800&q=85',
+    relatedProductId: 'chicken-dumpling-box-10',
+    content: {
+      intro: 'Handcrafted with thin pleated wrappers and fresh savoury filling, our chilled dumplings are prepared to be finished in minutes. Follow these three time-tested finishing methods for crisp, tender, or classic broth-served dumplings.',
+      methods: [
+        {
+          num: 1,
+          name: 'Pan-Frying (Crispy Bottom)',
+          badgeClass: '',
+          time: '~8 mins',
+          intro: 'The signature method for a golden, crunchy crust with juicy filling inside.',
+          steps: [
+            'Heat 1 tbsp cooking oil in a non-stick frying pan over medium-high heat.',
+            'Place chilled dumplings flat-side down into the pan. Fry for 2 to 3 minutes until the bottoms turn golden brown.',
+            'Carefully pour in 50ml water (approx. 3 tablespoons), then cover immediately with a tight lid.',
+            'Steam on medium heat for 5 minutes until the water has evaporated. Remove lid and let the bottom crisp up for another 30 seconds before serving hot.'
+          ]
+        },
+        {
+          num: 2,
+          name: 'Steaming (Tender & Juicy)',
+          badgeClass: 'steam',
+          time: '~10 mins',
+          intro: 'Gentle steam cooking for tender wrappers and maximum broth retention.',
+          steps: [
+            'Line a bamboo or metal steamer basket with baking parchment paper or clean cabbage leaves.',
+            'Arrange dumplings spacing them 2cm apart so they do not stick together as they expand.',
+            'Place steamer over vigorously boiling water, cover with lid, and steam for 8 to 10 minutes until steaming hot throughout.'
+          ]
+        },
+        {
+          num: 3,
+          name: 'Boiling (Silky & Classic)',
+          badgeClass: 'boil',
+          time: '~6 mins',
+          intro: 'Simple pot method ideal for serving with warm broth or chilli soy dip.',
+          steps: [
+            'Bring a large pot of water to a rolling boil.',
+            'Gently drop dumplings into boiling water, stirring lightly so they do not stick to the bottom.',
+            'Cook for 5 to 6 minutes until all dumplings float to the top and skins turn translucent. Drain gently and enjoy.'
+          ]
+        }
+      ],
+      safety: {
+        title: 'Food Safety & Storage Notice',
+        text: 'Always cook dumplings until the internal filling reaches at least 75°C (165°F). Keep chilled at ≤4°C until ready to cook. Do not refreeze once thawed.'
+      }
+    },
+    action: {
+      label: 'Order 10-Pack Box →',
+      targetCategory: 'finish-at-home'
+    }
+  }
+];
+
+function getContentItemsByCategory(categoryId) {
+  return BAMBOO_CONTENT_ITEMS.filter(item => item.category === categoryId);
+}
+
+// ==========================================
+// APP SHELL & MULTI-VIEW NAVIGATION
+// ==========================================
+
+/**
+ * Switch active app tab cleanly with smooth transitions and URL hash synchronization
+ */
+function navigateToTab(tabId, updateHistory = true) {
+  const validTabs = ['home', 'menu', 'prepare', 'orders', 'account'];
+  if (!validTabs.includes(tabId)) {
+    tabId = 'home';
+  }
+
+  appState.activeTab = tabId;
+
+  // 1. Toggle Tab Panes
+  validTabs.forEach(id => {
+    const pane = document.getElementById(`tab-view-${id}`);
+    if (pane) {
+      if (id === tabId) {
+        pane.classList.add('active');
+      } else {
+        pane.classList.remove('active');
+      }
+    }
+  });
+
+  // 2. Toggle Bottom Navigation Items
+  validTabs.forEach(id => {
+    const navBtn = document.getElementById(`nav-btn-${id}`);
+    if (navBtn) {
+      if (id === tabId) {
+        navBtn.classList.add('active');
+        navBtn.setAttribute('aria-selected', 'true');
+      } else {
+        navBtn.classList.remove('active');
+        navBtn.setAttribute('aria-selected', 'false');
+      }
+    }
+  });
+
+  // 3. Tab-specific lifecycle actions
+  if (tabId === 'orders') {
+    renderOrdersTab();
+  } else if (tabId === 'menu') {
+    renderMenu();
+  } else if (tabId === 'home') {
+    renderHomeFeed();
+  }
+
+  // Update contextual position of persistent bag bar
+  const floatingBtn = document.getElementById('floating-cart-btn');
+  if (floatingBtn) {
+    floatingBtn.setAttribute('data-tab-context', tabId);
+  }
+
+  // 4. Update URL Hash without page jump or reload
+  if (updateHistory) {
+    if (window.location.hash !== `#${tabId}`) {
+      if (window.history && window.history.replaceState) {
+        window.history.replaceState(null, '', `#${tabId}`);
+      } else {
+        window.location.hash = `#${tabId}`;
+      }
+    }
+  }
+
+  // 5. Scroll smoothly to top
+  window.scrollTo({ top: 0, behavior: 'instant' });
+}
+
+/**
+ * Switch to Menu tab and activate a specific category filter
+ */
+function navigateToCategory(categoryId) {
+  navigateToTab('menu');
+
+  appState.activeCategory = categoryId;
+  const categoryButtons = document.querySelectorAll('.cat-filter-btn');
+  categoryButtons.forEach(btn => {
+    const isTarget = btn.getAttribute('data-category') === categoryId;
+    btn.classList.toggle('active', isTarget);
+    btn.setAttribute('aria-selected', isTarget ? 'true' : 'false');
+    if (isTarget) {
+      setTimeout(() => {
+        btn.scrollIntoView({ behavior: 'smooth', inline: 'nearest', block: 'nearest' });
+      }, 50);
+    }
+  });
+
+  renderMenu();
+}
+
+// ==========================================
+// HOME DISCOVERY EXPERIENCE & DISCOVERY NODES
+// ==========================================
+
+/**
+ * Editorial Discovery Nodes Taxonomy for Bamboo Chicken Select — LOCKED 4 POST TYPES
+ * 1. FOOD (~50%) | 2. PREPARE (~25%) | 3. SERVING (~15%) | 4. BAMBOO ATTEND EVENTS (~10%)
+ * Profile Identity: ALWAYS 'BAMBOO CHICKEN'
+ */
+const DISCOVERY_NODES = [
+  // Post 1: TYPE 1 — FOOD
+  {
+    id: 'node-bamboo-chicken',
+    contentType: 'food',
+    themeClass: 'node-theme-dark',
+    productId: 'bamboo-chicken-select',
+    contextTitle: 'Signature Bamboo Chicken',
+    tag: 'Food',
+    tagClass: 'food-badge',
+    title: 'Signature Bamboo Chicken',
+    caption: 'Crispy, juicy Bamboo Chicken made for an easy, satisfying meal. Order it from Bamboo Select and add it straight to your bag.',
+    shortDesc: 'Crispy, juicy Bamboo Chicken made for an easy, satisfying meal',
+    fullDesc: 'Crispy, juicy Bamboo Chicken made for an easy, satisfying meal. Order it from Bamboo Select and add it straight to your bag.',
+    price: 3.00,
+    unit: '1 stick',
+    images: [
+      {
+        url: 'https://pub-1d12d1bcd0c54b5282f7b9e9eec3ba59.r2.dev/assets/images/website/bamboo_chicken_3_sticks.webp',
+        alt: 'Signature Bamboo Chicken on skewers fresh from the grill'
+      },
+      {
+        url: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=800&q=80',
+        alt: 'Flame-grilled chicken skewers sizzling over hot coals'
+      },
+      {
+        url: 'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=800&q=80',
+        alt: 'Bamboo Chicken skewer served hot and ready'
+      }
+    ],
+    initialLikes: 38,
+    initialComments: [
+      { author: 'Ronald (Head Chef)', avatar: '👨‍🍳', time: 'Today', text: 'Grilled over charcoal to seal in all the natural chicken juices.' },
+      { author: 'Avondale Customer', avatar: '🥢', time: 'Yesterday', text: 'The savoury glaze on these skewers is unreal. Arrived steaming hot!' }
+    ]
+  },
+
+  // Post 2: TYPE 2 — PREPARE
+  {
+    id: 'node-prep-dumplings-guide',
+    contentType: 'prepare',
+    themeClass: 'node-theme-craft',
+    productId: 'chicken-dumpling-box-10',
+    prepareTargetId: 'prep-featured-video',
+    prepareMethod: 'pan-frying',
+    contextTitle: 'How to Finish Cooking Bamboo Dumplings',
+    tag: 'Prepare',
+    tagClass: 'guide-badge',
+    title: 'How to Finish Cooking Bamboo Dumplings',
+    caption: 'Finish your Bamboo Dumplings at home with the right cooking technique. Follow Bamboo’s preparation guide for a crisp, properly cooked finish.',
+    shortDesc: 'Finish your Bamboo Dumplings at home with the right cooking technique',
+    fullDesc: 'Finish your Bamboo Dumplings at home with the right cooking technique. Follow Bamboo’s preparation guide for a crisp, properly cooked finish.',
+    images: [
+      {
+        url: 'https://images.unsplash.com/photo-1563245372-f21724e3856d?auto=format&fit=crop&w=800&q=85',
+        alt: 'Golden crispy pan-frying dumplings in a skillet'
+      },
+      {
+        url: 'https://images.unsplash.com/photo-1589301760014-d929f3979dbc?auto=format&fit=crop&w=800&q=80',
+        alt: 'Adding savoury soy sauce dip and spring onions'
+      }
+    ],
+    initialLikes: 41,
+    initialComments: [
+      { author: 'Chef Ronald', avatar: '👨‍🍳', time: '3 days ago', text: 'Pro tip: do not lift the lid during the 5-minute steam so heat stays trapped inside.' }
+    ]
+  },
+
+  // Post 3: TYPE 1 — FOOD
+  {
+    id: 'node-bamboo-pie',
+    contentType: 'food',
+    themeClass: 'node-theme-light',
+    productId: 'bamboo-pie-select',
+    contextTitle: 'Bamboo Pie',
+    tag: 'Food',
+    tagClass: 'food-badge',
+    title: 'Golden Bamboo Pie',
+    caption: 'A warm Bamboo favourite made for a quick bite whenever you’re hungry. Add Bamboo Pie to your bag and enjoy it your way.',
+    shortDesc: 'A warm Bamboo favourite, made for a quick bite whenever you’re hungry',
+    fullDesc: 'A warm Bamboo favourite made for a quick bite whenever you’re hungry. Add Bamboo Pie to your bag and enjoy it your way.',
+    price: 3.00,
+    unit: 'per pie',
+    images: [
+      {
+        url: 'https://pub-1d12d1bcd0c54b5282f7b9e9eec3ba59.r2.dev/assets/images/menu/bamboo_pie_3.webp',
+        alt: 'Golden savoury Bamboo Pie with flaky pastry crust'
+      },
+      {
+        url: 'https://images.unsplash.com/photo-1588195538326-c5b1e9f80a1b?auto=format&fit=crop&w=800&q=80',
+        alt: 'Warm freshly baked savoury pie ready to slice'
+      }
+    ],
+    initialLikes: 27,
+    initialComments: [
+      { author: 'Belgravia Customer', avatar: '🥧', time: 'Yesterday', text: 'The crust is properly flaky and buttery. Great lunch pairing with ice tea.' }
+    ]
+  },
+
+  // Post 4: TYPE 3 — SERVING
+  {
+    id: 'node-serving-dumplings-soy',
+    contentType: 'serving',
+    themeClass: 'node-theme-light',
+    servingId: 'prep-serving-section',
+    contextTitle: 'Dumplings & Soy Sauce',
+    tag: 'Serving',
+    tagClass: 'serving-badge',
+    title: 'Dumplings & Soy Sauce',
+    caption: 'A simple Bamboo pairing: dumplings with savoury soy for dipping and sharing. See how Bamboo brings the two together for an easy serving idea.',
+    shortDesc: 'A simple Bamboo pairing: dumplings with savoury soy for dipping and sharing',
+    fullDesc: 'A simple Bamboo pairing: dumplings with savoury soy for dipping and sharing. See how Bamboo brings the two together for an easy serving idea.',
+    images: [
+      {
+        url: 'https://images.unsplash.com/photo-1589301760014-d929f3979dbc?auto=format&fit=crop&w=800&q=80',
+        alt: 'Steamed dumplings served with savoury dipping soy sauce and scallions'
+      },
+      {
+        url: 'https://images.unsplash.com/photo-1496116218417-1a781b1c416c?auto=format&fit=crop&w=800&q=80',
+        alt: 'Dumplings on ceramic platter with dipping dish'
+      }
+    ],
+    initialLikes: 33,
+    initialComments: [
+      { author: 'Harare Foodie', avatar: '🥢', time: '2 days ago', text: 'The dipping soy makes all the difference.' }
+    ]
+  },
+
+  // Post 5: TYPE 1 — FOOD
+  {
+    id: 'node-cooked-dumplings-5',
+    contentType: 'food',
+    themeClass: 'node-theme-light',
+    productId: 'chicken-dumplings-cooked',
+    contextTitle: 'Hot Chicken Dumplings (5 Pack)',
+    tag: 'Food',
+    tagClass: 'food-badge',
+    title: 'Hot Chicken Dumplings (5 Pack)',
+    caption: 'Five cooked chicken dumplings, ready to enjoy as a snack or quick meal. Add a pack to your bag whenever dumplings are calling.',
+    shortDesc: 'Five cooked chicken dumplings, ready to enjoy as a snack or quick meal',
+    fullDesc: 'Five cooked chicken dumplings, ready to enjoy as a snack or quick meal. Add a pack to your bag whenever dumplings are calling.',
+    price: 5.00,
+    unit: 'pack of 5',
+    images: [
+      {
+        url: 'https://images.unsplash.com/photo-1496116218417-1a781b1c416c?auto=format&fit=crop&w=800&q=80',
+        alt: 'Steamed chicken dumplings served with savoury dipping sauce'
+      },
+      {
+        url: 'https://images.unsplash.com/photo-1541696432-82c6da8ce7bf?auto=format&fit=crop&w=800&q=80',
+        alt: 'Freshly cooked dumpling close up'
+      }
+    ],
+    initialLikes: 39,
+    initialComments: [
+      { author: 'Mount Pleasant Customer', avatar: '🛵', time: '3 days ago', text: 'Fast delivery to UZ area, arrived piping hot!' }
+    ]
+  },
+
+  // Post 6: TYPE 2 — PREPARE
+  {
+    id: 'node-prep-crispy-pan-fry',
+    contentType: 'prepare',
+    themeClass: 'node-theme-craft',
+    productId: 'chicken-dumpling-box-10',
+    prepareTargetId: 'prep-featured-video',
+    prepareMethod: 'pan-frying',
+    contextTitle: 'Crispy-Bottom Pan-Frying Technique',
+    tag: 'Prepare',
+    tagClass: 'guide-badge',
+    title: 'Crispy-Bottom Pan-Frying Technique',
+    caption: 'Learn how to give your Bamboo Dumplings a crisp, golden bottom at home. Follow the Bamboo preparation guide and see the technique step by step.',
+    shortDesc: 'Learn how to give your Bamboo Dumplings that crisp, golden bottom at home',
+    fullDesc: 'Learn how to give your Bamboo Dumplings a crisp, golden bottom at home. Follow the Bamboo preparation guide and see the technique step by step.',
+    images: [
+      {
+        url: 'https://images.unsplash.com/photo-1563245372-f21724e3856d?auto=format&fit=crop&w=800&q=85',
+        alt: 'Golden crispy pan-frying dumplings in a skillet'
+      },
+      {
+        url: 'https://images.unsplash.com/photo-1541696432-82c6da8ce7bf?auto=format&fit=crop&w=800&q=80',
+        alt: 'Dumpling pan-frying process'
+      }
+    ],
+    initialLikes: 45,
+    initialComments: [
+      { author: 'Chef Ronald', avatar: '👨‍🍳', time: 'Yesterday', text: 'Keep the heat steady on medium for the crunchiest lace bottom.' }
+    ]
+  },
+
+  // Post 7: TYPE 1 — FOOD
+  {
+    id: 'node-dumpling-box-10',
+    contentType: 'food',
+    themeClass: 'node-theme-light',
+    productId: 'chicken-dumpling-box-10',
+    contextTitle: 'Finish-at-Home Chicken Dumplings (10 Box)',
+    tag: 'Food',
+    tagClass: 'food-badge',
+    title: 'Finish-at-Home Chicken Dumplings (10 Box)',
+    caption: 'Ten chicken dumplings prepared for you to finish cooking at home. A Bamboo option for enjoying freshly finished dumplings when you’re ready.',
+    shortDesc: 'Ten chicken dumplings prepared for you to finish cooking at home',
+    fullDesc: 'Ten chicken dumplings prepared for you to finish cooking at home. A Bamboo option for enjoying freshly finished dumplings when you’re ready.',
+    price: 10.00,
+    unit: 'box of 10',
+    images: [
+      {
+        url: 'https://images.unsplash.com/photo-1563245372-f21724e3856d?auto=format&fit=crop&w=800&q=85',
+        alt: 'Chilled 10-pack dumplings being prepared in the pan'
+      },
+      {
+        url: 'https://images.unsplash.com/photo-1496116218417-1a781b1c416c?auto=format&fit=crop&w=800&q=80',
+        alt: 'Pan-fried golden crispy bottom dumplings'
+      }
+    ],
+    initialLikes: 54,
+    initialComments: [
+      { author: 'Borrowdale Foodie', avatar: '🍲', time: '2 days ago', text: 'We order 3 boxes for the weekend. So easy to finish in a non-stick pan.' }
+    ]
+  },
+
+  // Post 8: TYPE 4 — BAMBOO ATTEND EVENTS
+  {
+    id: 'node-event-has-swimming',
+    contentType: 'event',
+    themeClass: 'node-theme-dark',
+    eventId: 'has-swimming',
+    contextTitle: 'Bamboo at HAS — Harare Amateur Swimming',
+    tag: 'Events',
+    tagClass: 'event-badge',
+    title: 'Bamboo at HAS — Harare Amateur Swimming',
+    caption: 'Bamboo Chicken covers food for events, birthdays, weddings and special occasions. If you’re planning an event and want Bamboo there, enquire with us.',
+    shortDesc: 'Bamboo Chicken brings food to real occasions, from events to private celebrations',
+    fullDesc: 'Bamboo Chicken covers food for events, birthdays, weddings and special occasions. If you’re planning an event and want Bamboo there, enquire with us.',
+    images: [
+      {
+        url: 'https://pub-1d12d1bcd0c54b5282f7b9e9eec3ba59.r2.dev/assets/images/website/bamboo_chicken_3_sticks.webp',
+        alt: 'Bamboo Chicken catering live event setup'
+      },
+      {
+        url: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=800&q=80',
+        alt: 'Harare community enjoying fresh food'
+      }
+    ],
+    initialLikes: 68,
+    initialComments: [
+      { author: 'HAS Organiser', avatar: '🏊', time: 'Last weekend', text: 'The swimmers and parents loved the hot skewers between races!' }
+    ]
+  },
+
+  // Post 9: TYPE 1 — FOOD
+  {
+    id: 'node-ice-tea-soy-pair',
+    contentType: 'food',
+    themeClass: 'node-theme-light',
+    productId: 'ice-tea-select',
+    contextTitle: 'Select Ice Tea & Savoury Soy Sauce',
+    tag: 'Food',
+    tagClass: 'food-badge',
+    title: 'Select Ice Tea & Savoury Soy Sauce',
+    caption: 'Refresh with Bamboo iced tea, made for a cool and easy drink anytime. Add it to your bag through Bamboo Select.',
+    shortDesc: 'Refresh with Bamboo iced tea, made for a cool and easy drink anytime',
+    fullDesc: 'Refresh with Bamboo iced tea, made for a cool and easy drink anytime. Add it to your bag through Bamboo Select.',
+    price: 3.00,
+    unit: 'per bottle',
+    images: [
+      {
+        url: 'https://images.unsplash.com/photo-1556679343-c7306c1976bc?auto=format&fit=crop&w=800&q=80',
+        alt: 'Chilled citrus iced tea bottle'
+      },
+      {
+        url: 'https://images.unsplash.com/photo-1589301760014-d929f3979dbc?auto=format&fit=crop&w=800&q=80',
+        alt: 'Full bottle of rich savoury soy sauce'
+      }
+    ],
+    initialLikes: 22,
+    initialComments: [
+      { author: 'Eastlea Customer', avatar: '🥤', time: 'Yesterday', text: 'The ice tea is genuinely refreshing with the skewers.' }
+    ]
+  }
+];
+
+/**
+ * Updates dynamic greeting on Home based on current time
+ */
+function updateHomeGreeting() {
+  const greetingEl = document.getElementById('home-greeting-time');
+  if (!greetingEl) return;
+  const hour = new Date().getHours();
+  if (hour < 12) {
+    greetingEl.textContent = 'Good morning.';
+  } else if (hour < 17) {
+    greetingEl.textContent = 'Good afternoon.';
+  } else {
+    greetingEl.textContent = 'Good evening.';
+  }
+}
+
+/**
+ * Get likes count and status for a discovery node
+ */
+function getNodeLikesData(nodeId) {
+  const node = DISCOVERY_NODES.find(n => n.id === nodeId);
+  let likedList = [];
+  try {
+    const raw = localStorage.getItem('bamboo_select_liked_nodes');
+    if (raw) likedList = JSON.parse(raw);
+  } catch (e) {}
+
+  const isLiked = Array.isArray(likedList) && likedList.includes(nodeId);
+  const baseLikes = node ? node.initialLikes : 0;
+  return {
+    isLiked,
+    count: baseLikes + (isLiked ? 1 : 0)
+  };
+}
+
+/**
+ * Toggle like for a discovery node
+ */
+function toggleNodeLike(nodeId) {
+  let likedList = [];
+  try {
+    const raw = localStorage.getItem('bamboo_select_liked_nodes');
+    if (raw) likedList = JSON.parse(raw);
+    if (!Array.isArray(likedList)) likedList = [];
+  } catch (e) {
+    likedList = [];
+  }
+
+  const alreadyLiked = likedList.includes(nodeId);
+  if (alreadyLiked) {
+    likedList = likedList.filter(id => id !== nodeId);
+  } else {
+    likedList.push(nodeId);
+  }
+
+  try {
+    localStorage.setItem('bamboo_select_liked_nodes', JSON.stringify(likedList));
+  } catch (e) {}
+
+  // Update UI immediately
+  const btn = document.getElementById(`like-btn-${nodeId}`);
+  const countEl = document.getElementById(`like-count-${nodeId}`);
+  const node = DISCOVERY_NODES.find(n => n.id === nodeId);
+  const baseLikes = node ? node.initialLikes : 0;
+  const newCount = baseLikes + (!alreadyLiked ? 1 : 0);
+
+  if (btn) {
+    btn.classList.toggle('liked', !alreadyLiked);
+    const svg = btn.querySelector('svg');
+    if (svg) {
+      svg.setAttribute('fill', !alreadyLiked ? '#E11D48' : 'none');
+    }
+  }
+  if (countEl) {
+    countEl.textContent = newCount;
+  }
+}
+
+/**
+ * Get comments count for a discovery node
+ */
+function getNodeCommentsCount(nodeId) {
+  const node = DISCOVERY_NODES.find(n => n.id === nodeId);
+  let localComments = [];
+  try {
+    const raw = localStorage.getItem(`bamboo_select_comments_${nodeId}`);
+    if (raw) localComments = JSON.parse(raw);
+  } catch (e) {}
+
+  const initialCount = (node && node.initialComments) ? node.initialComments.length : 0;
+  const userCount = Array.isArray(localComments) ? localComments.length : 0;
+  return initialCount + userCount;
+}
+
+/**
+ * Render all comments for active discovery node
+ */
+function renderNodeComments(nodeId) {
+  const container = document.getElementById('comments-list-container');
+  if (!container) return;
+
+  const node = DISCOVERY_NODES.find(n => n.id === nodeId);
+  if (!node) return;
+
+  let localComments = [];
+  try {
+    const raw = localStorage.getItem(`bamboo_select_comments_${nodeId}`);
+    if (raw) localComments = JSON.parse(raw);
+    if (!Array.isArray(localComments)) localComments = [];
+  } catch (e) {
+    localComments = [];
+  }
+
+  const allComments = [...(node.initialComments || []), ...localComments];
+
+  if (allComments.length === 0) {
+    container.innerHTML = `
+      <div class="comments-empty-state">
+        <p>No comments yet. Share your thoughts on this dish!</p>
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML = allComments.map(c => `
+    <div class="comment-row">
+      <div class="comment-avatar">${escapeHtml(c.avatar || '💬')}</div>
+      <div class="comment-body">
+        <div class="comment-author-row">
+          <span class="comment-author-name">${escapeHtml(c.author || 'Customer')}</span>
+          <span class="comment-time">${escapeHtml(c.time || 'Recently')}</span>
+        </div>
+        <p class="comment-text">${escapeHtml(c.text || '')}</p>
+      </div>
+    </div>
+  `).join('');
+
+  container.scrollTop = container.scrollHeight;
+}
+
+/**
+ * Open Comments Bottom Sheet for a specific Discovery Node
+ */
+function openCommentsSheet(nodeId) {
+  const node = DISCOVERY_NODES.find(n => n.id === nodeId);
+  if (!node) return;
+
+  appState.activeCommentNodeId = nodeId;
+
+  const modal = document.getElementById('comments-sheet-modal');
+  const titleEl = document.getElementById('comments-sheet-title');
+  const subEl = document.getElementById('comments-sheet-subtitle');
+  const inputEl = document.getElementById('comment-input-field');
+
+  if (titleEl) titleEl.textContent = 'Comments';
+  if (subEl) subEl.textContent = node.title;
+  if (inputEl) inputEl.value = '';
+
+  renderNodeComments(nodeId);
+
+  if (modal) {
+    modal.classList.add('active');
+    modal.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+  }
+}
+
+/**
+ * Close Comments Bottom Sheet
+ */
+function closeCommentsSheet() {
+  const modal = document.getElementById('comments-sheet-modal');
+  if (modal) {
+    modal.classList.remove('active');
+    modal.setAttribute('aria-hidden', 'true');
+  }
+  document.body.style.overflow = '';
+  appState.activeCommentNodeId = null;
+}
+
+/**
+ * Submit comment for active discovery node
+ */
+function submitDiscoveryComment() {
+  const nodeId = appState.activeCommentNodeId;
+  if (!nodeId) return;
+
+  const inputEl = document.getElementById('comment-input-field');
+  if (!inputEl) return;
+
+  const text = inputEl.value.trim();
+  if (!text) return;
+
+  let localComments = [];
+  try {
+    const raw = localStorage.getItem(`bamboo_select_comments_${nodeId}`);
+    if (raw) localComments = JSON.parse(raw);
+    if (!Array.isArray(localComments)) localComments = [];
+  } catch (e) {
+    localComments = [];
+  }
+
+  localComments.push({
+    author: 'You (Harare Customer)',
+    avatar: '🥢',
+    time: 'Just now',
+    text: text
+  });
+
+  try {
+    localStorage.setItem(`bamboo_select_comments_${nodeId}`, JSON.stringify(localComments));
+  } catch (e) {}
+
+  inputEl.value = '';
+  renderNodeComments(nodeId);
+
+  // Update comment counter in feed
+  const countEl = document.getElementById(`comment-count-${nodeId}`);
+  if (countEl) {
+    countEl.textContent = getNodeCommentsCount(nodeId);
+  }
+
+  showToastNotification('Comment saved locally on device');
+}
+
+/**
+ * Share Discovery Node (Native Web Share with Clipboard Fallback)
+ */
+function shareDiscoveryNode(nodeId) {
+  const node = DISCOVERY_NODES.find(n => n.id === nodeId);
+  if (!node) return;
+
+  const shareUrl = `${window.location.origin}${window.location.pathname}#discovery-${nodeId}`;
+  const shareTitle = `${node.title} — Bamboo Chicken Select`;
+  const shareText = `${node.caption} Order fresh in Harare!`;
+
+  if (navigator.share) {
+    navigator.share({
+      title: shareTitle,
+      text: shareText,
+      url: shareUrl
+    }).catch(err => {
+      if (err.name !== 'AbortError') {
+        copyDiscoveryLink(shareUrl);
+      }
+    });
+  } else {
+    copyDiscoveryLink(shareUrl);
+  }
+}
+
+function copyDiscoveryLink(url) {
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(url).then(() => {
+      showToastNotification('Discovery link copied to clipboard!');
+    }).catch(() => {
+      promptCopyFallback(url);
+    });
+  } else {
+    promptCopyFallback(url);
+  }
+}
+
+function promptCopyFallback(url) {
+  showToastNotification('Link ready: ' + url);
+}
+
+/**
+ * Update multi-image gallery counter and dot indicators as user scrolls horizontally
+ */
+function handleGalleryScroll(sliderEl, counterId, dotsContainerId) {
+  if (!sliderEl) return;
+  const slideWidth = sliderEl.clientWidth;
+  if (!slideWidth) return;
+
+  const currentIndex = Math.min(
+    Math.floor((sliderEl.scrollLeft + (slideWidth / 2)) / slideWidth) + 1,
+    sliderEl.children.length
+  );
+
+  const counterEl = document.getElementById(counterId);
+  if (counterEl) {
+    counterEl.textContent = `${currentIndex}/${sliderEl.children.length}`;
+  }
+
+  const dotsContainer = document.getElementById(dotsContainerId);
+  if (dotsContainer) {
+    const dots = dotsContainer.children;
+    for (let i = 0; i < dots.length; i++) {
+      dots[i].classList.toggle('active', i === currentIndex - 1);
+    }
+  }
+}
+
+/**
+ * Scroll gallery to a specific slide when user taps a dot indicator
+ */
+function scrollGalleryToSlide(sliderId, slideIndex) {
+  const slider = document.getElementById(sliderId);
+  if (!slider) return;
+  const slideWidth = slider.clientWidth;
+  slider.scrollTo({
+    left: slideIndex * slideWidth,
+    behavior: 'smooth'
+  });
+}
+
+/**
+ * 1-Tap Add to Bag directly from Discovery Node with instant tactile feedback
+ */
+function addNodeProductToBag(productId, btnEl) {
+  quickAddItemToBag(productId);
+
+  if (btnEl) {
+    btnEl.classList.add('added');
+    btnEl.innerHTML = `<span class="add-icon">✓</span><span class="add-label">ADDED</span>`;
+    setTimeout(() => {
+      btnEl.classList.remove('added');
+      updateHomeFeedInBagBadges();
+    }, 1000);
+  }
+}
+
+/**
+ * Update In-Bag indicators on Home Discovery Feed nodes
+ */
+function updateHomeFeedInBagBadges() {
+  const feedEl = document.getElementById('home-discovery-feed');
+  if (!feedEl) return;
+
+  DISCOVERY_NODES.forEach(node => {
+    if (!node.productId) return;
+    const nodeEl = document.getElementById(`discovery-${node.id}`);
+    if (!nodeEl) return;
+
+    const cartItem = appState.cart.find(c => c.id === node.productId);
+    const inBagQty = cartItem ? cartItem.quantity : 0;
+    const addBtn = nodeEl.querySelector('.btn-node-add-bag');
+
+    if (addBtn && !addBtn.classList.contains('btn-node-explore') && !addBtn.classList.contains('added')) {
+      const labelSpan = addBtn.querySelector('.add-label');
+      const iconSpan = addBtn.querySelector('.add-icon');
+      if (inBagQty > 0) {
+        addBtn.classList.add('in-bag');
+        if (labelSpan) labelSpan.textContent = `In Bag (${inBagQty})`;
+        if (iconSpan) iconSpan.textContent = '✓';
+      } else {
+        addBtn.classList.remove('in-bag');
+        if (labelSpan) labelSpan.textContent = 'Add to Bag';
+        if (iconSpan) iconSpan.textContent = '+';
+      }
+    }
+  });
+}
+
+/**
+ * Render the Vertical Food Discovery Feed with Editorial Discovery Nodes
+ */
+function renderHomeFeed() {
+  updateHomeGreeting();
+
+  const container = document.getElementById('home-discovery-feed');
+  if (!container) return;
+
+  container.innerHTML = DISCOVERY_NODES.map(node => {
+    const isMultiImage = node.images && node.images.length > 1;
+    const totalSlides = node.images ? node.images.length : 1;
+    const sliderId = `slider-${node.id}`;
+    const counterId = `counter-${node.id}`;
+    const dotsId = `dots-${node.id}`;
+
+    const likesData = getNodeLikesData(node.id);
+    const commentsCount = getNodeCommentsCount(node.id);
+
+    // Slides markup
+    const slidesHtml = (node.images || []).map(img => `
+      <div class="discovery-gallery-slide">
+        <img src="${img.url}" alt="${escapeHtml(img.alt || node.title)}" loading="lazy" />
+      </div>
+    `).join('');
+
+    // Dots markup
+    const dotsHtml = isMultiImage ? `
+      <div class="discovery-gallery-dots" id="${dotsId}" role="tablist" aria-label="Photo carousel indicators">
+        ${node.images.map((_, idx) => `
+          <button type="button" class="gallery-dot ${idx === 0 ? 'active' : ''}" onclick="scrollGalleryToSlide('${sliderId}', ${idx});" aria-label="Go to slide ${idx + 1}" role="tab"></button>
+        `).join('')}
+      </div>
+    ` : '';
+
+    // Counter markup
+    const counterHtml = isMultiImage ? `
+      <div class="discovery-gallery-counter" id="${counterId}" aria-label="Slide 1 of ${totalSlides}">
+        1/${totalSlides}
+      </div>
+    ` : '';
+
+    // Primary CTA Markup strictly mapped to the 4 content types (Section 2 & 6)
+    let commerceHtml = '';
+    if (node.contentType === 'food') {
+      const cartItem = appState.cart.find(c => c.id === node.productId);
+      const inBagQty = cartItem ? cartItem.quantity : 0;
+      commerceHtml = `
+        <div class="commerce-price-block">
+          <span class="node-price-val">$${node.price.toFixed(2)}</span>
+          ${node.unit ? `<span class="node-unit-val">${escapeHtml(node.unit)}</span>` : ''}
+        </div>
+        <button type="button" class="btn-node-add-bag ${inBagQty > 0 ? 'in-bag' : ''}" onclick="addNodeProductToBag('${node.productId}', this);" aria-label="Add ${escapeHtml(node.title)} to bag for $${node.price.toFixed(2)}">
+          <span class="add-icon">${inBagQty > 0 ? '✓' : '+'}</span>
+          <span class="add-label">${inBagQty > 0 ? `In Bag (${inBagQty})` : 'Add to Bag'}</span>
+        </button>
+      `;
+    } else if (node.contentType === 'prepare') {
+      commerceHtml = `
+        <button type="button" class="btn-node-action-primary btn-node-prep" onclick="openPrepareForProduct('${node.prepareTargetId || 'prep-featured-video'}', '${node.prepareMethod || 'pan-frying'}');" aria-label="How to prepare ${escapeHtml(node.title)}">
+          <span>HOW TO PREPARE</span>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+        </button>
+      `;
+    } else if (node.contentType === 'serving') {
+      commerceHtml = `
+        <button type="button" class="btn-node-action-primary btn-node-serving" onclick="openServingContent('${node.servingId || 'prep-serving-section'}');" aria-label="See how to serve ${escapeHtml(node.title)}">
+          <span>SEE HOW</span>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+        </button>
+      `;
+    } else if (node.contentType === 'event') {
+      commerceHtml = `
+        <button type="button" class="btn-node-action-primary btn-node-event" onclick="openEventEnquiry('${escapeHtml(node.title)}');" aria-label="Enquire for your event with Bamboo Chicken">
+          <span>ENQUIRE FOR YOUR EVENT</span>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+        </button>
+      `;
+    }
+
+    return `
+      <article class="discovery-node ${node.themeClass || 'node-theme-light'}" id="discovery-${node.id}" aria-label="${escapeHtml(node.title)}">
+        <!-- Node Author Header: CONSTANT Profile (BAMBOO CHICKEN) + Variable Post Context/Title -->
+        <header class="discovery-node-header">
+          <div class="node-author-group">
+            <div class="node-avatar-circle">🥢</div>
+            <div class="node-author-info">
+              <span class="node-author-name">BAMBOO CHICKEN</span>
+              <span class="node-author-sub">${escapeHtml(node.contextTitle || node.title)}</span>
+            </div>
+          </div>
+          <span class="node-badge-tag ${node.tagClass || ''}">${escapeHtml(node.tag)}</span>
+        </header>
+
+        <!-- Multi-Image Photo Gallery -->
+        <div class="discovery-gallery-wrap">
+          <div 
+            class="discovery-gallery-slider" 
+            id="${sliderId}" 
+            onscroll="handleGalleryScroll(this, '${counterId}', '${dotsId}');"
+            tabindex="0"
+            role="region"
+            aria-label="${escapeHtml(node.title)} photo gallery"
+          >
+            ${slidesHtml}
+          </div>
+          ${counterHtml}
+          ${dotsHtml}
+        </div>
+
+        <!-- Restrained Social Engagement Row: Like, Comment, Share -->
+        <div class="discovery-actions-row">
+          <div class="discovery-engagement-group">
+            <button 
+              type="button" 
+              class="btn-discovery-action ${likesData.isLiked ? 'liked' : ''}" 
+              id="like-btn-${node.id}" 
+              onclick="toggleNodeLike('${node.id}');"
+              aria-label="Like ${escapeHtml(node.title)}"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="${likesData.isLiked ? '#E11D48' : 'none'}" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+              </svg>
+              <span id="like-count-${node.id}">${likesData.count}</span>
+            </button>
+
+            <button 
+              type="button" 
+              class="btn-discovery-action" 
+              onclick="openCommentsSheet('${node.id}');"
+              aria-label="View comments for ${escapeHtml(node.title)}"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+              </svg>
+              <span id="comment-count-${node.id}">${commentsCount}</span>
+            </button>
+
+            <button 
+              type="button" 
+              class="btn-discovery-action" 
+              onclick="shareDiscoveryNode('${node.id}');"
+              aria-label="Share ${escapeHtml(node.title)}"
+            >
+              <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="18" cy="5" r="3"></circle>
+                <circle cx="6" cy="12" r="3"></circle>
+                <circle cx="18" cy="19" r="3"></circle>
+                <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Node Editorial Content Body -->
+        <div class="discovery-node-body">
+          <h2 class="node-title">${escapeHtml(node.title)}</h2>
+          <div class="node-description-wrap" id="desc-${node.id}">
+            <span class="desc-text">${escapeHtml(node.shortDesc || node.caption)}</span><span class="desc-ellipsis">... </span><button type="button" class="btn-desc-toggle" onclick="toggleNodeDescription('${node.id}', true);" aria-label="Show more description for ${escapeHtml(node.title)}">more</button>
+          </div>
+        </div>
+
+        <!-- Single Primary Action Row belonging to Content Type -->
+        <div class="discovery-commerce-row">
+          ${commerceHtml}
+        </div>
+      </article>
+    `;
+  }).join('');
+}
+
+/**
+ * Toggle Discovery Node description expansion inline without re-rendering or jumping
+ */
+function toggleNodeDescription(nodeId, expand) {
+  const descEl = document.getElementById(`desc-${nodeId}`);
+  if (!descEl) return;
+  const node = DISCOVERY_NODES.find(n => n.id === nodeId);
+  if (!node) return;
+
+  if (expand) {
+    descEl.classList.add('expanded');
+    descEl.innerHTML = `
+      <span class="desc-text">${escapeHtml(node.fullDesc || node.caption)}</span>
+      <button type="button" class="btn-desc-toggle" onclick="toggleNodeDescription('${nodeId}', false);" aria-label="Show less description">less</button>
+    `;
+  } else {
+    descEl.classList.remove('expanded');
+    descEl.innerHTML = `
+      <span class="desc-text">${escapeHtml(node.shortDesc || node.caption)}</span><span class="desc-ellipsis">... </span><button type="button" class="btn-desc-toggle" onclick="toggleNodeDescription('${nodeId}', true);" aria-label="Show more description">more</button>
+    `;
+  }
+}
+
+/**
+ * Handle TYPE 2 (PREPARE): Navigate to Prepare content and focus video/guide
+ */
+function openPrepareForProduct(targetId, method) {
+  navigateToTab('prepare');
+  setTimeout(() => {
+    const el = document.getElementById(targetId) || document.getElementById('prep-featured-video') || document.getElementById('prepare-video-masterclass');
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      el.style.transition = 'box-shadow 0.3s ease, border-color 0.3s ease';
+      el.style.borderColor = 'var(--gold-vibrant)';
+      el.style.boxShadow = '0 0 0 3px rgba(217, 119, 6, 0.35)';
+      setTimeout(() => {
+        el.style.borderColor = '';
+        el.style.boxShadow = '';
+      }, 2000);
+    }
+  }, 120);
+}
+
+/**
+ * Handle TYPE 3 (SERVING): Navigate to Prepare destination and focus Serving section
+ */
+function openServingContent(targetId) {
+  navigateToTab('prepare');
+  setTimeout(() => {
+    const el = document.getElementById(targetId || 'prep-serving-section') || document.getElementById('prep-serving-section');
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      el.style.transition = 'box-shadow 0.3s ease, border-color 0.3s ease';
+      el.style.borderColor = 'var(--gold-vibrant)';
+      el.style.boxShadow = '0 0 0 3px rgba(217, 119, 6, 0.35)';
+      setTimeout(() => {
+        el.style.borderColor = '';
+        el.style.boxShadow = '';
+      }, 2000);
+    }
+  }, 120);
+}
+
+/**
+ * Canonical Frying Method Video Source configuration
+ * (Single canonical video source for both Home PREPARE posts)
+ */
+const CANONICAL_FRYING_VIDEO = {
+  id: 'prep-featured-video',
+  title: 'How to Finish Cooking Bamboo Dumplings',
+  subtitle: 'Frying / finish-at-home method',
+  poster: 'https://images.unsplash.com/photo-1563245372-f21724e3856d?auto=format&fit=crop&w=800&q=85',
+  src: '' // Plugged when official video file asset is deployed
+};
+
+/**
+ * Play Dumpling Preparation Video technique explicitly on user tap (STRICT: NO autoplay)
+ */
+function playPrepareVideo() {
+  const posterLayer = document.getElementById('prep-video-poster-layer');
+  const video = document.getElementById('prep-native-video');
+  const nonplaying = document.getElementById('prep-video-nonplaying-state');
+
+  if (CANONICAL_FRYING_VIDEO.src) {
+    // If real video asset exists, play using standard native HTML5 video player
+    if (posterLayer) posterLayer.style.display = 'none';
+    if (nonplaying) nonplaying.style.display = 'none';
+    if (video) {
+      video.style.display = 'block';
+      if (!video.src || !video.src.includes(CANONICAL_FRYING_VIDEO.src)) {
+        video.src = CANONICAL_FRYING_VIDEO.src;
+      }
+      video.loop = false; // Do not automatically replay
+      video.muted = false; // Allow sound / unmute on explicit user tap
+
+      // Stop at end and leave user in PREPARE experience
+      video.onended = () => {
+        video.pause();
+      };
+
+      const playPromise = video.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(() => {
+          // If browser restricts unmuted autoplay, mute as fallback
+          video.muted = true;
+          video.play();
+        });
+      }
+    }
+  } else {
+    // Real video asset is not yet available: preserve video architecture
+    // and display appropriate non-playing state rather than fake video content
+    if (posterLayer) posterLayer.style.display = 'none';
+    if (video) {
+      video.style.display = 'none';
+      video.pause();
+    }
+    if (nonplaying) {
+      nonplaying.style.display = 'flex';
+    }
+  }
+}
+
+/**
+ * Reset video container back to initial thumbnail card with clear PLAY button
+ */
+function resetPrepareVideo() {
+  const posterLayer = document.getElementById('prep-video-poster-layer');
+  const video = document.getElementById('prep-native-video');
+  const nonplaying = document.getElementById('prep-video-nonplaying-state');
+
+  if (video) {
+    video.pause();
+    video.currentTime = 0;
+    video.style.display = 'none';
+  }
+  if (nonplaying) {
+    nonplaying.style.display = 'none';
+  }
+  if (posterLayer) {
+    posterLayer.style.display = 'block';
+  }
+}
+
+/**
+ * Fullscreen toggle helper (Allow view video full or close full)
+ */
+function togglePrepareVideoFullscreen() {
+  const video = document.getElementById('prep-native-video');
+  if (!video) return;
+  if (document.fullscreenElement || document.webkitFullscreenElement) {
+    if (document.exitFullscreen) document.exitFullscreen();
+    else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+  } else {
+    if (video.requestFullscreen) {
+      video.requestFullscreen();
+    } else if (video.webkitRequestFullscreen) {
+      video.webkitRequestFullscreen();
+    } else if (video.webkitEnterFullscreen) {
+      video.webkitEnterFullscreen();
+    }
+  }
+}
+
+/**
+ * Sound toggle helper (Allow unmute to allow sound)
+ */
+function togglePrepareVideoSound() {
+  const video = document.getElementById('prep-native-video');
+  if (!video) return;
+  video.muted = !video.muted;
+}
+
+/**
+ * Serving description in PREPARE destination
+ * (Compact editorial 1-2 lines with inline ...more / less expansion)
+ */
+const PREPARE_SERVING_DESC = {
+  short: 'A simple Bamboo pairing: dumplings with savoury soy for dipping and sharing',
+  full: 'A simple Bamboo pairing: dumplings with savoury soy for dipping and sharing. See how Bamboo brings the two together for an easy serving idea. Serve freshly pan-fried or steamed dumplings immediately while piping hot with authentic savoury dipping soy, fresh scallions, and toasted sesame.'
+};
+
+function togglePrepareServingDesc(expand) {
+  const wrap = document.getElementById('prep-serving-desc-wrap');
+  if (!wrap) return;
+  if (expand) {
+    wrap.classList.add('expanded');
+    wrap.innerHTML = `
+      <span class="desc-text">${escapeHtml(PREPARE_SERVING_DESC.full)}</span>
+      <button type="button" class="btn-desc-toggle" onclick="togglePrepareServingDesc(false);" aria-label="Show less description">less</button>
+    `;
+  } else {
+    wrap.classList.remove('expanded');
+    wrap.innerHTML = `
+      <span class="desc-text">${escapeHtml(PREPARE_SERVING_DESC.short)}</span><span class="desc-ellipsis">... </span><button type="button" class="btn-desc-toggle" onclick="togglePrepareServingDesc(true);" aria-label="Show more description for Dumplings &amp; Soy Sauce">more</button>
+    `;
+  }
+}
+
+/**
+ * Handle TYPE 3 (SERVING): Open serving guide bottom sheet
+ */
+function openServingSheet(servingId) {
+  const modal = document.getElementById('serving-sheet-modal');
+  const container = document.getElementById('serving-sheet-content');
+  if (!modal || !container) return;
+
+  container.innerHTML = `
+    <div class="serving-sheet-body">
+      <div class="serving-hero-media">
+        <img src="https://images.unsplash.com/photo-1589301760014-d929f3979dbc?auto=format&fit=crop&w=800&q=80" alt="Dumplings & Savoury Soy Sauce" />
+      </div>
+      <div>
+        <span style="font-size: 0.72rem; font-weight: 800; color: #B45309; text-transform: uppercase; letter-spacing: 0.08em;">Serving Inspiration</span>
+        <h4 style="font-size: 1.15rem; font-weight: 800; color: #111827; margin: 3px 0 6px;">Dumplings &amp; Savoury Soy Sauce</h4>
+        <p style="font-size: 0.85rem; color: #4B5563; line-height: 1.48; margin: 0;">
+          Serve freshly pan-fried or steamed dumplings immediately while piping hot. Drizzle with authentic savoury dipping soy, thinly sliced spring onions, and a touch of toasted sesame oil.
+        </p>
+      </div>
+      <div class="serving-tip-box">
+        <strong>💡 Pairing Suggestion:</strong>
+        <div>Pair with chilled Select Ice Tea brewed with citrus notes for a refreshing balance against the warm savoury glaze.</div>
+      </div>
+      <div style="display: flex; gap: 10px; margin-top: 4px;">
+        <button type="button" class="btn-node-serving" style="flex: 1;" onclick="closeServingSheet(); navigateToCategory('finish-at-home');">
+          View Dumplings in Menu &rarr;
+        </button>
+        <button type="button" class="btn-comment-cancel" style="padding: 8px 16px; border-radius: 999px;" onclick="closeServingSheet();">
+          Done
+        </button>
+      </div>
+    </div>
+  `;
+
+  modal.style.display = 'flex';
+  modal.setAttribute('aria-hidden', 'false');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeServingSheet() {
+  const modal = document.getElementById('serving-sheet-modal');
+  if (!modal) return;
+  modal.style.display = 'none';
+  modal.setAttribute('aria-hidden', 'true');
+  document.body.style.overflow = '';
+}
+
+/**
+ * Handle TYPE 4 (BAMBOO ATTEND EVENTS): Open event catering enquiry sheet
+ */
+function openEventEnquiry(eventTitle) {
+  const modal = document.getElementById('event-sheet-modal');
+  const container = document.getElementById('event-sheet-content');
+  if (!modal || !container) return;
+
+  const defaultMsg = encodeURIComponent("Hi Bamboo Chicken, I would like to enquire about event catering and food coverage for our event.");
+
+  container.innerHTML = `
+    <div class="event-sheet-body">
+      <div class="event-hero-media">
+        <img src="https://pub-1d12d1bcd0c54b5282f7b9e9eec3ba59.r2.dev/assets/images/website/bamboo_chicken_3_sticks.webp" alt="Bamboo Chicken Event Catering" />
+      </div>
+      <div>
+        <span style="font-size: 0.72rem; font-weight: 800; color: #166534; text-transform: uppercase; letter-spacing: 0.08em;">Event Food Coverage</span>
+        <h4 style="font-size: 1.15rem; font-weight: 800; color: #111827; margin: 3px 0 6px;">Bamboo at HAS &amp; Harare Events</h4>
+        <p style="font-size: 0.85rem; color: #4B5563; line-height: 1.48; margin: 0;">
+          We cover food for events, birthdays, weddings and special occasions across Harare. Flame-grilled skewers and hot dumplings prepared live for your guests.
+        </p>
+      </div>
+      <div class="event-info-box">
+        <strong>🍢 On-Site Live Catering:</strong>
+        <div>Live charcoal grilling station, hot dumpling service, and ice tea refreshment bars tailored for private and corporate gatherings.</div>
+      </div>
+      <div class="event-action-buttons">
+        <a href="https://wa.me/263790040778?text=${defaultMsg}" target="_blank" rel="noopener noreferrer" class="btn-event-whatsapp">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.006c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.201.662.591 1.221.774 1.394.86.174.086.275.072.376-.044.101-.116.433-.506.549-.68.116-.174.231-.145.39-.086.159.058 1.011.477 1.184.564.173.087.289.13.332.203.043.072.043.419-.101.824z"></path></svg>
+          <span>Chat on WhatsApp: +263 790 040 778</span>
+        </a>
+        <a href="tel:+263790040778" class="btn-event-call">
+          <span>Call Hotline: +263 790 040 778</span>
+        </a>
+      </div>
+    </div>
+  `;
+
+  modal.style.display = 'flex';
+  modal.setAttribute('aria-hidden', 'false');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeEventSheet() {
+  const modal = document.getElementById('event-sheet-modal');
+  if (!modal) return;
+  modal.style.display = 'none';
+  modal.setAttribute('aria-hidden', 'true');
+  document.body.style.overflow = '';
+}
+
+/**
+ * Open Product Details Bottom Sheet
+ */
+function openProductSheet(itemId) {
+  const item = SELECT_CATALOG.find(i => i.id === itemId);
+  if (!item) return;
+
+  appState.activeSheetProduct = item;
+  appState.sheetQuantity = 1;
+
+  const modal = document.getElementById('product-sheet-modal');
+  const scrollBody = document.getElementById('sheet-scroll-body');
+  const footer = document.getElementById('sheet-footer');
+
+  if (!modal || !scrollBody || !footer) return;
+
+  const badgeText = item.badge || (item.unit ? item.unit : 'Select Item');
+  const isFinishAtHome = item.category === 'finish-at-home' || item.isBox;
+
+  // Render Sheet Scrollable Content
+  scrollBody.innerHTML = `
+    <div class="sheet-hero-media">
+      <img src="${item.image}" alt="${escapeHtml(item.alt || item.name)}" loading="lazy" />
+      <span class="sheet-badge">${escapeHtml(badgeText)}</span>
+    </div>
+
+    <div class="sheet-title-row">
+      <h2 class="sheet-product-title" id="sheet-product-title">${escapeHtml(item.name)}</h2>
+      <span class="sheet-price-tag">$${item.price.toFixed(2)}</span>
+    </div>
+
+    <div class="sheet-unit-label">${escapeHtml(item.unit || 'per portion')}</div>
+
+    <p class="sheet-desc-text">${escapeHtml(item.description)}</p>
+
+    ${isFinishAtHome ? `
+      <div class="sheet-prep-highlight">
+        <div class="sheet-prep-highlight-text">
+          <strong>HOW TO PREPARE</strong>
+          <span>Finish this chilled 10-box at home in minutes. Three validated methods: Pan-Frying (crispy bottom), Steaming, or Boiling.</span>
+        </div>
+        <button type="button" class="btn-sheet-how-to-prep" onclick="closeProductSheet(); navigateToTab('prepare');">
+          <span>View Cooking Guide</span>
+          <span>&rarr;</span>
+        </button>
+      </div>
+
+      <div class="sheet-bulk-note">
+        <span>✨ Bulk Tier: Order 3+ boxes to receive $0.50 off per box</span>
+      </div>
+    ` : ''}
+
+    ${item.id === 'select-soy-sauce' ? `
+      <div class="sheet-prep-highlight" style="background: #F0FDF4; border-color: #BBF7D0;">
+        <div class="sheet-prep-highlight-text">
+          <strong style="color: #166534;">SERVING SUGGESTION</strong>
+          <span style="color: #14532D;">Perfect accompaniment for finished dumplings or adding rich savoury umami to home rice &amp; noodle dishes.</span>
+        </div>
+      </div>
+    ` : ''}
+  `;
+
+  // Render Sheet Sticky Footer
+  footer.innerHTML = `
+    <div class="sheet-stepper" role="group" aria-label="Quantity selector">
+      <button type="button" class="sheet-stepper-btn" onclick="changeSheetQuantity(-1);" aria-label="Decrease quantity">-</button>
+      <span class="sheet-stepper-val" id="sheet-qty-val">1</span>
+      <button type="button" class="sheet-stepper-btn" onclick="changeSheetQuantity(1);" aria-label="Increase quantity">+</button>
+    </div>
+    <button type="button" class="btn-sheet-add-cta" id="btn-sheet-add-cta" onclick="addSheetItemToBag('${item.id}');">
+      <span>Add to Bag</span>
+      <span id="sheet-cta-price">• $${item.price.toFixed(2)}</span>
+    </button>
+  `;
+
+  modal.classList.add('active');
+  modal.setAttribute('aria-hidden', 'false');
+  document.body.style.overflow = 'hidden';
+}
+
+/**
+ * Close Product Details Bottom Sheet
+ */
+function closeProductSheet() {
+  const modal = document.getElementById('product-sheet-modal');
+  if (modal) {
+    modal.classList.remove('active');
+    modal.setAttribute('aria-hidden', 'true');
+  }
+  document.body.style.overflow = '';
+  appState.activeSheetProduct = null;
+}
+
+/**
+ * Adjust quantity stepper inside Product Details Bottom Sheet
+ */
+function changeSheetQuantity(delta) {
+  if (!appState.activeSheetProduct) return;
+
+  const current = appState.sheetQuantity || 1;
+  const next = Math.max(1, Math.min(99, current + delta));
+  appState.sheetQuantity = next;
+
+  const valEl = document.getElementById('sheet-qty-val');
+  if (valEl) valEl.textContent = next;
+
+  const priceEl = document.getElementById('sheet-cta-price');
+  if (priceEl && appState.activeSheetProduct) {
+    const total = (appState.activeSheetProduct.price * next).toFixed(2);
+    priceEl.textContent = `• $${total}`;
+  }
+}
+
+/**
+ * Add item from bottom sheet with selected quantity
+ */
+function addSheetItemToBag(itemId) {
+  const item = SELECT_CATALOG.find(i => i.id === itemId);
+  if (!item) return;
+
+  const qty = appState.sheetQuantity || 1;
+  const existingInCart = appState.cart.find(c => c.id === itemId);
+  if (existingInCart) {
+    existingInCart.quantity += qty;
+  } else {
+    appState.cart.push({
+      id: item.id,
+      name: item.name,
+      price: item.price,
+      basePrice: item.price,
+      quantity: qty,
+      image: item.image,
+      isBox: item.category === 'finish-at-home',
+      isProvisional: item.id === 'select-soy-sauce' && !SOY_SAUCE_CONFIG.volumeConfirmed
+    });
+  }
+
+  // Micro-interaction on sheet CTA button
+  const ctaBtn = document.getElementById('btn-sheet-add-cta');
+  if (ctaBtn) {
+    ctaBtn.classList.add('added');
+    ctaBtn.innerHTML = `<span>✓ Added to Bag</span>`;
+  }
+
+  updateCartUI();
+  renderMenu();
+  updateHomeFeedInBagBadges();
+
+  setTimeout(() => {
+    closeProductSheet();
+  }, 350);
+}
+
+/**
+ * 1-Tap Quick Add to Bag from Home discovery cards
+ */
+function quickAddItemToBag(itemId) {
+  const item = SELECT_CATALOG.find(i => i.id === itemId);
+  if (!item) return;
+
+  const existingInCart = appState.cart.find(c => c.id === itemId);
+  if (existingInCart) {
+    existingInCart.quantity += 1;
+  } else {
+    appState.cart.push({
+      id: item.id,
+      name: item.name,
+      price: item.price,
+      basePrice: item.price,
+      quantity: 1,
+      image: item.image,
+      unit: item.unit || '',
+      description: item.description || '',
+      isBox: item.category === 'finish-at-home',
+      isProvisional: item.id === 'select-soy-sauce' && !SOY_SAUCE_CONFIG.volumeConfirmed
+    });
+  }
+
+  // Sync card quantity stepper
+  appState.cardQuantities[itemId] = (appState.cardQuantities[itemId] || 1);
+
+  renderMenu();
+  updateCartUI();
+  updateHomeFeedInBagBadges();
+}
+
+/**
+ * Save confirmed order to local storage history
+ */
+function saveConfirmedOrderToHistory(order) {
+  if (!order || !order.orderId) return;
+  try {
+    const raw = localStorage.getItem('bamboo_select_orders_history');
+    let orders = [];
+    if (raw) {
+      orders = JSON.parse(raw);
+    }
+    if (!Array.isArray(orders)) {
+      orders = [];
+    }
+    // Remove if duplicate orderId exists
+    orders = orders.filter(o => o.orderId !== order.orderId);
+    orders.unshift(order);
+    localStorage.setItem('bamboo_select_orders_history', JSON.stringify(orders));
+    updateNavOrdersBadge();
+  } catch (err) {
+    console.warn("Could not save confirmed order to localStorage:", err);
+  }
+}
+
+/**
+ * Show badge dot on bottom nav Orders icon when past orders exist
+ */
+function updateNavOrdersBadge() {
+  const dot = document.getElementById('nav-orders-dot');
+  if (!dot) return;
+  try {
+    const raw = localStorage.getItem('bamboo_select_orders_history');
+    const orders = raw ? JSON.parse(raw) : [];
+    dot.style.display = (Array.isArray(orders) && orders.length > 0) ? 'block' : 'none';
+  } catch (e) {
+    dot.style.display = 'none';
+  }
+}
+
+/**
+ * Render the dedicated Orders Tab
+ */
+function renderOrdersTab() {
+  const container = document.getElementById('orders-list-container');
+  if (!container) return;
+
+  let orders = [];
+  try {
+    const raw = localStorage.getItem('bamboo_select_orders_history');
+    if (raw) {
+      orders = JSON.parse(raw);
+    }
+  } catch (e) {
+    console.warn("Failed to parse orders history:", e);
+  }
+
+  if (!orders || orders.length === 0) {
+    container.innerHTML = `
+      <div class="orders-empty-state">
+        <div class="empty-orders-icon">🥡</div>
+        <h3 class="empty-orders-title">No Orders Yet</h3>
+        <p class="empty-orders-desc">
+          When you place an order for Bamboo Chicken skewers or finish-at-home dumpling boxes, your confirmed order history, details, and live WhatsApp support links will appear here.
+        </p>
+        <button type="button" class="btn-empty-orders-action" onclick="navigateToTab('menu');">
+          Browse Menu &amp; Order
+        </button>
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML = orders.map(order => {
+    const cleanId = String(order.orderId || '').replace(/^#+/, '');
+    const displayId = cleanId.startsWith('BC-') ? cleanId : `BC-${cleanId}`;
+
+    // Format date nicely
+    let dateStr = 'Recently Placed';
+    if (order.createdAt) {
+      try {
+        const d = new Date(order.createdAt);
+        dateStr = d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) + ' • ' +
+                  d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+      } catch (err) {
+        // fallback
+      }
+    }
+
+    // Format item summary lines
+    const itemsHtml = (order.items || []).map(item => {
+      const unitPrice = typeof item.effectiveUnitPrice === 'number' ? item.effectiveUnitPrice : item.price;
+      const lineTotal = typeof item.lineTotal === 'number' ? item.lineTotal : (unitPrice * (item.quantity || 1));
+      return `
+        <div class="order-item-summary-line">
+          <span>${escapeHtml(item.name)} &times; ${item.quantity || 1}</span>
+          <span>$${lineTotal.toFixed(2)}</span>
+        </div>
+      `;
+    }).join('');
+
+    const grandTotal = typeof order.grandTotal === 'number' ? order.grandTotal : 0;
+    const deliveryArea = escapeHtml(order.deliveryArea || 'Harare');
+    const paymentMethodLabel = order.paymentMethod === 'ecocash_usd' ? 'EcoCash USD' : 'Cash on Delivery (USD)';
+    const encodedOrderMsg = encodeURIComponent(`Hi Bamboo Chicken, I am following up on my Select order #${displayId} (${deliveryArea})`);
+
+    return `
+      <div class="order-history-card">
+        <div class="order-history-card-header">
+          <div class="order-id-badge">#${escapeHtml(displayId)}</div>
+          <span class="order-status-badge">Confirmed • In Kitchen</span>
+        </div>
+
+        <div class="order-items-summary-list">
+          ${itemsHtml}
+        </div>
+
+        <div class="order-meta-info-row">
+          <span>${dateStr}</span>
+          <span>${deliveryArea} • ${paymentMethodLabel}</span>
+        </div>
+
+        <div class="order-card-total-row">
+          <span class="order-total-label">Total</span>
+          <span class="order-total-val">$${grandTotal.toFixed(2)}</span>
+        </div>
+
+        <div class="order-actions-row">
+          <a href="https://wa.me/263790040778?text=${encodedOrderMsg}" target="_blank" rel="noopener noreferrer" class="btn-order-action whatsapp" aria-label="Follow up on WhatsApp">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.006c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.201.662.591 1.221.774 1.394.86.174.086.275.072.376-.044.101-.116.433-.506.549-.68.116-.174.231-.145.39-.086.159.058 1.011.477 1.184.564.173.087.289.13.332.203.043.072.043.419-.101.824z"></path>
+            </svg>
+            <span>WhatsApp Kitchen</span>
+          </a>
+          <button type="button" class="btn-order-action copy" onclick="copyOrderId('${escapeHtml(displayId)}');" aria-label="Copy Order ID">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+            </svg>
+            <span>Copy ID</span>
+          </button>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+// ==========================================
 // 3. INITIALIZATION & LIFECYCLE
 // ==========================================
 
 document.addEventListener('DOMContentLoaded', () => {
   renderMenu();
+  renderHomeFeed();
   setupEventListeners();
   setupFooterInteraction();
   updateCartUI();
+
+  // App Shell Navigation initialization from URL hash
+  const initialHash = (window.location.hash || '').replace('#', '').toLowerCase();
+  const validTabs = ['home', 'menu', 'prepare', 'orders', 'account'];
+  if (validTabs.includes(initialHash)) {
+    navigateToTab(initialHash, false);
+  } else {
+    navigateToTab('home', false);
+  }
+  updateNavOrdersBadge();
+
   initPWA();
 });
 
@@ -320,8 +1980,52 @@ function setupEventListeners() {
     });
   }
 
+  // Product Details bottom sheet backdrop click listener
+  const sheetBackdrop = document.getElementById('product-sheet-modal');
+  if (sheetBackdrop) {
+    sheetBackdrop.addEventListener('click', (e) => {
+      if (e.target === sheetBackdrop) closeProductSheet();
+    });
+  }
+
+  // Comments bottom sheet backdrop click listener
+  const commentsBackdrop = document.getElementById('comments-sheet-modal');
+  if (commentsBackdrop) {
+    commentsBackdrop.addEventListener('click', (e) => {
+      if (e.target === commentsBackdrop) closeCommentsSheet();
+    });
+  }
+
+  // Global Keyboard Escape listener for modals and bottom sheets
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      closeProductSheet();
+      closeCommentsSheet();
+      closeAreaPicker();
+      closeCart();
+    }
+  });
+
   // Initialize custom in-app delivery area picker listeners
   initAreaPickerListeners();
+
+  // Brand logo home link
+  const brandHomeLink = document.getElementById('brand-home-link');
+  if (brandHomeLink) {
+    brandHomeLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      navigateToTab('home');
+    });
+  }
+
+  // Hashchange listener for hardware back / URL navigation
+  window.addEventListener('hashchange', () => {
+    const hash = (window.location.hash || '').replace('#', '').toLowerCase();
+    const validTabs = ['home', 'menu', 'prepare', 'orders', 'account'];
+    if (validTabs.includes(hash)) {
+      navigateToTab(hash, false);
+    }
+  });
 }
 
 function openCart() {
@@ -390,7 +2094,7 @@ function setupFooterInteraction() {
 }
 
 // ==========================================
-// 4. MENU RENDERING (ORGANIZED SECTIONS)
+// 4. MENU RENDERING (PREMIUM RESTAURANT EXPERIENCE)
 // ==========================================
 
 function renderMenu() {
@@ -404,8 +2108,8 @@ function renderMenu() {
 
   if (sectionsToRender.length === 0) {
     container.innerHTML = `
-      <div style="text-align: center; padding: 40px 20px; color: var(--text-muted);">
-        <p>No items found in this category.</p>
+      <div class="menu-empty-state">
+        <p>No items found in this section.</p>
       </div>
     `;
     return;
@@ -417,115 +2121,112 @@ function renderMenu() {
 
     if (sectionProducts.length === 0) return '';
 
-    const cardsHtml = sectionProducts.map(item => renderProductCard(item)).join('');
+    const itemsHtml = sectionProducts.map(item => renderRestaurantMenuItem(item)).join('');
 
     return `
-      <section class="menu-catalog-section" id="section-${section.id}" aria-labelledby="heading-${section.id}">
-        <!-- Section Header -->
-        <div class="menu-section-header">
-          <span class="menu-section-pill">${section.badge}</span>
-          <h2 class="menu-section-title" id="heading-${section.id}">${section.title}</h2>
-          <p class="menu-section-desc">${section.description}</p>
+      <section class="restaurant-menu-section" id="section-${section.id}" aria-labelledby="heading-${section.id}">
+        <!-- Section Editorial Header -->
+        <div class="restaurant-section-header">
+          <div class="restaurant-section-title-wrap">
+            <h2 class="restaurant-section-title" id="heading-${section.id}">${escapeHtml(section.title)}</h2>
+            ${section.badge ? `<span class="restaurant-section-badge">${escapeHtml(section.badge)}</span>` : ''}
+          </div>
+          ${section.description ? `<p class="restaurant-section-desc">${escapeHtml(section.description)}</p>` : ''}
         </div>
 
-        <!-- Section Product Grid -->
-        <div class="product-grid">
-          ${cardsHtml}
+        <!-- Section Menu Items (Compact Scannable Restaurant Rows) -->
+        <div class="restaurant-items-list" role="list">
+          ${itemsHtml}
         </div>
       </section>
     `;
   }).join('');
 }
 
-// Render individual product card
-function renderProductCard(item) {
-  const cardQty = appState.cardQuantities[item.id] || 1;
+// Render individual restaurant menu item row
+function renderRestaurantMenuItem(item) {
   const cartItem = appState.cart.find(c => c.id === item.id);
   const inBagQty = cartItem ? cartItem.quantity : 0;
+  const shortDesc = item.shortDescription || item.description || '';
 
-  // Pricing calculation and tags
+  // Pricing display
   let priceDisplay = `$${item.price.toFixed(2)}`;
-  let subDisplay = item.unit;
-  let promoBadge = '';
 
-  if (item.isBox) {
-    const policy = DISCOUNT_CONFIG.policies[DISCOUNT_CONFIG.activePolicy];
-    const calculation = policy.calculate(cardQty, item.price);
-    if (calculation.applied) {
-      priceDisplay = `$${calculation.unitPrice.toFixed(2)}`;
-      subDisplay = `Total: $${(calculation.unitPrice * cardQty).toFixed(2)} (${cardQty} boxes)`;
-      promoBadge = `<div class="bulk-promo-tag">Bulk Tier: Save $0.50/box (${cardQty} boxes)</div>`;
-    } else {
-      promoBadge = `<div class="bulk-promo-tag">Bulk savings begin at 3 boxes</div>`;
-    }
+  // Action control: '+ Add' button or inline '−  qty  +' stepper directly on the row
+  let actionControlHtml = '';
+  if (inBagQty === 0) {
+    actionControlHtml = `
+      <button 
+        type="button" 
+        class="btn-menu-add" 
+        id="btn-add-${item.id}"
+        onclick="quickAddMenuItem('${item.id}', event);"
+        aria-label="Add ${escapeHtml(item.name)} to bag"
+      >
+        <span class="btn-menu-add-plus">+</span>
+        <span class="btn-menu-add-text">Add</span>
+      </button>
+    `;
+  } else {
+    actionControlHtml = `
+      <div class="menu-inline-stepper" role="group" aria-label="Quantity for ${escapeHtml(item.name)}">
+        <button 
+          type="button" 
+          class="menu-stepper-btn minus" 
+          onclick="modifyCartItemQty('${item.id}', -1); event.stopPropagation();"
+          aria-label="Decrease quantity"
+        >&minus;</button>
+        <span class="menu-stepper-val" id="menu-val-${item.id}">${inBagQty}</span>
+        <button 
+          type="button" 
+          class="menu-stepper-btn plus" 
+          onclick="modifyCartItemQty('${item.id}', 1); event.stopPropagation();"
+          aria-label="Increase quantity"
+        >&plus;</button>
+      </div>
+    `;
   }
 
   return `
-    <article class="select-product-card ${item.isBox ? 'finish-box-card' : ''}" id="product-card-${item.id}">
-      <!-- 1. Product Image -->
-      <div class="select-card-media ${item.aspectClass || ''}">
+    <article class="restaurant-menu-row" id="product-card-${item.id}" role="listitem">
+      <!-- 1. Small Food Photo (Doorway into Deeper Food View) -->
+      <button 
+        type="button" 
+        class="restaurant-item-photo-btn" 
+        onclick="openProductSheet('${item.id}');"
+        aria-label="View full photo and details for ${escapeHtml(item.name)}"
+      >
         <img 
           src="${item.image}" 
-          alt="${item.alt}" 
+          alt="${escapeHtml(item.alt || item.name)}" 
+          class="restaurant-item-thumb"
           loading="lazy" 
           decoding="async"
-          onerror="this.src='https://images.unsplash.com/photo-1546793665-c74683f339c1?auto=format&fit=crop&w=600&q=80'"
+          onerror="this.src='https://images.unsplash.com/photo-1546793665-c74683f339c1?auto=format&fit=crop&w=400&q=80'"
         />
-        ${item.badge ? `<span class="media-tag-badge">${item.badge}</span>` : ''}
-      </div>
+        <span class="restaurant-photo-expand-badge" aria-hidden="true">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="15 3 21 3 21 9"></polyline>
+            <polyline points="9 21 3 21 3 15"></polyline>
+            <line x1="21" y1="3" x2="14" y2="10"></line>
+            <line x1="3" y1="21" x2="10" y2="14"></line>
+          </svg>
+        </span>
+      </button>
 
-      <!-- Information & Ordering Controls -->
-      <div class="select-card-content">
-        <div class="select-card-header">
-          <!-- 2. Product Name -->
-          <h3 class="select-card-title">${item.name}</h3>
-          <!-- 3. Short, Truthful Description -->
-          <p class="select-card-desc">${item.description}</p>
-          ${promoBadge}
+      <!-- 2. Restaurant Item Details (Scannable, Compact, High Hierarchy) -->
+      <div class="restaurant-item-body">
+        <div class="restaurant-item-top">
+          <h3 class="restaurant-item-title" onclick="openProductSheet('${item.id}');">${escapeHtml(item.name)}</h3>
+          <span class="restaurant-item-price">${priceDisplay}</span>
         </div>
 
-        <!-- 4. Price & Unit, 5. Stepper, 6. Add to Order -->
-        <div class="select-card-footer">
-          <div class="select-price-block">
-            <div class="select-price-row">
-              <span class="select-price-amount" id="price-display-${item.id}">${priceDisplay}</span>
-              <span class="select-price-sub" id="unit-display-${item.id}">${subDisplay}</span>
-            </div>
-            ${inBagQty > 0 ? `<span class="in-bag-count-badge">In Bag: ${inBagQty}</span>` : ''}
-          </div>
+        <p class="restaurant-item-desc" onclick="openProductSheet('${item.id}');">${escapeHtml(shortDesc)}</p>
 
-          <div class="select-action-cluster">
-            <!-- 5. Quantity Stepper [- 1 +] -->
-            <div class="card-stepper" aria-label="Quantity selector for ${item.name}">
-              <button 
-                type="button" 
-                class="stepper-btn" 
-                onclick="adjustCardQuantity('${item.id}', -1)"
-                aria-label="Decrease quantity"
-              >&minus;</button>
-              <span class="stepper-val" id="stepper-val-${item.id}">${cardQty}</span>
-              <button 
-                type="button" 
-                class="stepper-btn" 
-                onclick="adjustCardQuantity('${item.id}', 1)"
-                aria-label="Increase quantity"
-              >&plus;</button>
-            </div>
-
-            <!-- 6. Add to Bag Button -->
-            <button 
-              type="button" 
-              class="btn-card-add" 
-              onclick="addCurrentCardToCart('${item.id}')"
-              aria-label="Add ${cardQty} ${item.name} to bag"
-            >
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"></path>
-                <path d="M3 6h18"></path>
-                <path d="M16 10a4 4 0 0 1-8 0"></path>
-              </svg>
-              <span>Add to Bag</span>
-            </button>
+        <div class="restaurant-item-bottom">
+          <span class="restaurant-item-unit">${escapeHtml(item.unit || '')}</span>
+          <div class="restaurant-item-action" id="action-wrap-${item.id}">
+            ${actionControlHtml}
           </div>
         </div>
       </div>
@@ -533,72 +2234,61 @@ function renderProductCard(item) {
   `;
 }
 
-// ==========================================
-// 5. CARD STEPPER CONTROLS
-// ==========================================
-
-function adjustCardQuantity(itemId, delta) {
-  const current = appState.cardQuantities[itemId] || 1;
-  const newQty = Math.max(1, current + delta);
-  appState.cardQuantities[itemId] = newQty;
-
-  // Update UI values immediately for smooth response
-  const stepperValEl = document.getElementById(`stepper-val-${itemId}`);
-  if (stepperValEl) {
-    stepperValEl.textContent = newQty;
-  }
-
-  // If Finish-at-Home box, update bulk tier preview dynamically on the card
-  const item = SELECT_CATALOG.find(i => i.id === itemId);
-  if (item && item.isBox) {
-    const policy = DISCOUNT_CONFIG.policies[DISCOUNT_CONFIG.activePolicy];
-    const calculation = policy.calculate(newQty, item.price);
-    const priceDisplay = document.getElementById(`price-display-${itemId}`);
-    const unitDisplay = document.getElementById(`unit-display-${itemId}`);
-
-    if (priceDisplay && unitDisplay) {
-      if (calculation.applied) {
-        priceDisplay.textContent = `$${calculation.unitPrice.toFixed(2)}`;
-        unitDisplay.textContent = `Total: $${(calculation.unitPrice * newQty).toFixed(2)} (${newQty} boxes)`;
-      } else {
-        priceDisplay.textContent = `$${item.price.toFixed(2)}`;
-        unitDisplay.textContent = `${item.unit}`;
-      }
-    }
-  }
-}
-
-// Add the selected quantity on the card into the bag
-function addCurrentCardToCart(itemId) {
+// 1-Tap Quick Add with subtle inline micro-confirmation (NO disruptive toasts)
+function quickAddMenuItem(itemId, event) {
+  if (event) event.stopPropagation();
   const item = SELECT_CATALOG.find(i => i.id === itemId);
   if (!item) return;
 
-  const qtyToAdd = appState.cardQuantities[itemId] || 1;
-  const existing = appState.cart.find(c => c.id === itemId);
-
-  if (existing) {
-    existing.quantity += qtyToAdd;
+  const existingInCart = appState.cart.find(c => c.id === itemId);
+  if (existingInCart) {
+    existingInCart.quantity += 1;
   } else {
     appState.cart.push({
       id: item.id,
       name: item.name,
       price: item.price,
       basePrice: item.price,
-      isBox: !!item.isBox,
-      isProvisional: !!item.isProvisional,
-      quantity: qtyToAdd,
+      quantity: 1,
       image: item.image,
       unit: item.unit || '',
-      description: item.description || ''
+      description: item.description || '',
+      isBox: !!item.isBox,
+      isProvisional: item.id === 'select-soy-sauce' && !SOY_SAUCE_CONFIG.volumeConfirmed
     });
   }
 
-  // Reset card stepper back to 1
-  appState.cardQuantities[itemId] = 1;
-  renderMenu();
-  updateCartUI();
+  // Micro-confirmation: gentle checkmark on button
+  if (event && event.currentTarget) {
+    const btn = event.currentTarget;
+    btn.classList.add('just-added');
+    btn.innerHTML = '<span class="just-added-check">✓</span>';
+  }
 
-  showToastNotification(`Added ${qtyToAdd}x ${item.name} to your Select Bag`);
+  updateCartUI();
+  updateHomeFeedInBagBadges();
+
+  setTimeout(() => {
+    renderMenu();
+  }, 180);
+}
+
+// Maintain backward compatibility for any existing calls
+function renderProductCard(item) {
+  return renderRestaurantMenuItem(item);
+}
+
+// ==========================================
+// 5. CARD STEPPER CONTROLS
+// ==========================================
+
+function adjustCardQuantity(itemId, delta) {
+  modifyCartItemQty(itemId, delta);
+}
+
+// Add the selected quantity on the card into the bag
+function addCurrentCardToCart(itemId) {
+  quickAddMenuItem(itemId);
 }
 
 function removeItemFromCart(itemId) {
@@ -668,7 +2358,16 @@ function updateCartUI() {
   const headerCountEl = document.getElementById('cart-count');
   if (headerCountEl) headerCountEl.textContent = totalItemsCount;
 
-  // 3. Update Persistent Mobile Bag Bar
+  const headerCartBtn = document.getElementById('open-cart-btn');
+  if (headerCartBtn) {
+    if (totalItemsCount === 0) {
+      headerCartBtn.classList.add('empty');
+    } else {
+      headerCartBtn.classList.remove('empty');
+    }
+  }
+
+  // 3. Update Persistent Mobile Bag Bar (Docked contextually above bottom nav)
   const floatingBtn = document.getElementById('floating-cart-btn');
   const floatingBadge = document.getElementById('floating-cart-badge');
   const floatingTotal = document.getElementById('floating-cart-total');
@@ -678,7 +2377,11 @@ function updateCartUI() {
   if (floatingItemsLabel) floatingItemsLabel.textContent = totalItemsCount === 1 ? 'item' : 'items';
   if (floatingTotal) floatingTotal.textContent = `$${subtotal.toFixed(2)}`;
   if (floatingBtn) {
-    floatingBtn.style.display = totalItemsCount > 0 ? 'block' : 'none';
+    const isCheckoutOpen = typeof checkoutState !== 'undefined' && checkoutState && checkoutState.isOpen;
+    floatingBtn.style.display = (totalItemsCount > 0 && !isCheckoutOpen) ? 'inline-flex' : 'none';
+    if (!floatingBtn.getAttribute('data-tab-context')) {
+      floatingBtn.setAttribute('data-tab-context', appState.activeTab || 'menu');
+    }
   }
 
   // 4. Update Drawer Content
@@ -714,6 +2417,11 @@ function updateCartUI() {
     } else {
       discountRowEl.style.display = 'none';
     }
+  }
+
+  // 5. Sync in-bag badges on Home discovery feed cards
+  if (typeof updateHomeFeedInBagBadges === 'function') {
+    updateHomeFeedInBagBadges();
   }
 }
 
@@ -956,6 +2664,10 @@ function openCheckout(step = 1) {
   const modal = document.getElementById('checkout-modal');
   if (modal) modal.classList.add('active');
 
+  // Hide persistent bag bar so it doesn't obstruct checkout controls
+  const floatingBtn = document.getElementById('floating-cart-btn');
+  if (floatingBtn) floatingBtn.style.display = 'none';
+
   const progressBar = document.getElementById('checkout-progress-bar');
   if (progressBar && !checkoutState.confirmedOrder) {
     progressBar.style.display = 'flex';
@@ -982,6 +2694,9 @@ function closeCheckout() {
   checkoutState.isOpen = false;
   const modal = document.getElementById('checkout-modal');
   if (modal) modal.classList.remove('active');
+
+  // Restore bag bar if items remain
+  updateCartUI();
 
   if (typeof flushPendingPWAUpdate === 'function') {
     flushPendingPWAUpdate();
@@ -2460,6 +4175,9 @@ async function executeOrderSubmission() {
       createdAt: new Date().toISOString()
     };
 
+    // Persist confirmed order to local order history
+    saveConfirmedOrderToHistory(checkoutState.confirmedOrder);
+
     // Clear cart and card steppers
     appState.cart = [];
     SELECT_CATALOG.forEach(item => {
@@ -3308,5 +5026,47 @@ window.closeIOSInstallModal = closeIOSInstallModal;
 window.checkForPWAUpdate = checkForPWAUpdate;
 window.flushPendingPWAUpdate = flushPendingPWAUpdate;
 window.isSafeToApplyUpdate = isSafeToApplyUpdate;
+window.navigateToTab = navigateToTab;
+window.navigateToCategory = navigateToCategory;
+window.quickAddItemToBag = quickAddItemToBag;
+window.renderOrdersTab = renderOrdersTab;
+window.saveConfirmedOrderToHistory = saveConfirmedOrderToHistory;
+window.updateNavOrdersBadge = updateNavOrdersBadge;
+window.BAMBOO_CONTENT_CATEGORIES = BAMBOO_CONTENT_CATEGORIES;
+window.BAMBOO_CONTENT_ITEMS = BAMBOO_CONTENT_ITEMS;
+window.getContentItemsByCategory = getContentItemsByCategory;
+window.DISCOVERY_NODES = DISCOVERY_NODES;
+window.updateHomeGreeting = updateHomeGreeting;
+window.renderHomeFeed = renderHomeFeed;
+window.toggleNodeLike = toggleNodeLike;
+window.getNodeLikesData = getNodeLikesData;
+window.getNodeCommentsCount = getNodeCommentsCount;
+window.openCommentsSheet = openCommentsSheet;
+window.closeCommentsSheet = closeCommentsSheet;
+window.renderNodeComments = renderNodeComments;
+window.submitDiscoveryComment = submitDiscoveryComment;
+window.shareDiscoveryNode = shareDiscoveryNode;
+window.handleGalleryScroll = handleGalleryScroll;
+window.scrollGalleryToSlide = scrollGalleryToSlide;
+window.addNodeProductToBag = addNodeProductToBag;
+window.openProductSheet = openProductSheet;
+window.closeProductSheet = closeProductSheet;
+window.quickAddMenuItem = quickAddMenuItem;
+window.renderRestaurantMenuItem = renderRestaurantMenuItem;
+window.changeSheetQuantity = changeSheetQuantity;
+window.addSheetItemToBag = addSheetItemToBag;
+window.toggleNodeDescription = toggleNodeDescription;
+window.updateHomeFeedInBagBadges = updateHomeFeedInBagBadges;
+window.openPrepareForProduct = openPrepareForProduct;
+window.playPrepareVideo = playPrepareVideo;
+window.resetPrepareVideo = resetPrepareVideo;
+window.togglePrepareVideoFullscreen = togglePrepareVideoFullscreen;
+window.togglePrepareVideoSound = togglePrepareVideoSound;
+window.openServingContent = openServingContent;
+window.togglePrepareServingDesc = togglePrepareServingDesc;
+window.openServingSheet = openServingContent;
+window.closeServingSheet = closeServingSheet;
+window.openEventEnquiry = openEventEnquiry;
+window.closeEventSheet = closeEventSheet;
 
 
